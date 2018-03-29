@@ -10,9 +10,9 @@ import UIKit
 import LS2SDK
 
 
-class LoginViewController: UIViewController{
+class LoginViewController: UIViewController, UITextFieldDelegate{
     
-
+    
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var usernameText: UITextField!
     @IBOutlet weak var loginButton: UIButton!
@@ -28,8 +28,16 @@ class LoginViewController: UIViewController{
         loginButton.layer.cornerRadius = 5
         loginButton.clipsToBounds = true
         
+        self.passwordText.delegate = self
+        self.passwordText.returnKeyType = .done
+        self.usernameText.delegate = self
+        self.passwordText.returnKeyType = .done
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
     
     @IBAction func loginClicked(_ sender: Any) {
         
@@ -37,15 +45,15 @@ class LoginViewController: UIViewController{
             // make message to fill fields
         }
         else {
-
+            
             self.login()
-
+            
         }
         
     }
     
     private func login() {
-       
+        
         if manager.isSignedIn{
             let storyboard = UIStoryboard(name: "Onboarding", bundle: Bundle.main)
             let vc = storyboard.instantiateInitialViewController()
@@ -72,3 +80,4 @@ class LoginViewController: UIViewController{
     }
     
 }
+

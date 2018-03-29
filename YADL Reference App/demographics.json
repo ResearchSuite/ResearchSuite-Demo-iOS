@@ -1,0 +1,80 @@
+{
+    "type": "recurring",
+    "identifier": "demographics",
+    "title": "Demographics",
+    "guid": "demographics",
+    "activity": {
+        "type"      : "elementList",
+        "identifier": "demographics_list",
+        "elements"   : [
+                        {
+                        "identifier": "gender",
+                        "type": "singleChoiceText",
+                        "text": "What is your gender?",
+                        "items": [
+                                  {
+                                  "prompt": "Female",
+                                  "value": "female"
+                                  },
+                                  {
+                                  "prompt": "Male",
+                                  "value": "male"
+                                  },
+                                  {
+                                  "prompt": "Transgender",
+                                  "value": "transgender"
+                                  },
+                                  {
+                                  "prompt": "Other",
+                                  "value": "other"
+                                  }
+                                  ]
+                        },
+                        {
+                        "identifier": "age",
+                        "type": "numericInteger",
+                        "text": "What is your age?",
+                        "range": {
+                        "min": 18,
+                        "max": 99,
+                        "unitLabel": "years"
+                        }
+                        },
+                        {
+                        "identifier": "zip_code",
+                        "type": "textfield",
+                        "text": "What is your zip code?",
+                        "validationRegex": "^[0-9]{5}$",
+                        "invalidMessage": "Please enter a valid zip code."
+                        }
+                        ]
+    },
+    "resultTransforms":[
+                        {
+                        "transform":"DemographicsSurvey",
+                        "inputMapping":[
+                                        {
+                                        "stepIdentifier":"gender",
+                                        "parameter":"gender"
+                                        },
+                                        {
+                                        "stepIdentifier":"age",
+                                        "parameter":"age"
+                                        },
+                                        {
+                                        "stepIdentifier":"zip_code",
+                                        "parameter":"zip_code"
+                                        },
+                                        {
+                                        "parameter": "schemaID",
+                                        "constant": {
+                                        "namespace": "Cornell",
+                                        "name": "rs-survey",
+                                        "version": "1.0.0"
+                                        }
+                                        }
+                                        ]
+                        }
+                        ]
+    
+}

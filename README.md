@@ -9,5 +9,5 @@ This ResearchSuite Demo app includes:
 * Adaptable Visual Assessment (PAM)
 * Geofencing Survey
 
-
+The data collected from the surveys will be sent to the study server.
 

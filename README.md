@@ -1,4 +1,11 @@
 # ResearchSuite-Demo-iOS
 
-![](https://github.com/ResearchSuite/Docs/blob/master/Info%205555%20ResearchSuite%20Demo%20iOS%20Setup.png?raw=true)
+This ResearchSuite Demo app includes:
+* Simple Demographic Survey
+* Notification Survey
+* Adaptable Visual Assessment (YADL)
+* Adaptable Visual Assessment (PAM)
+* Geofencing Survey
+
+[Setup Instructions](https://github.com/ResearchSuite/ResearchSuite-Demo-iOS)
 

@@ -11,7 +11,7 @@ import Gloss
 
 open class RSTBLocationStepDescriptor: RSTBQuestionStepDescriptor {
     
-    open let useCurrentLocation: Bool
+    public let useCurrentLocation: Bool
     public required init?(json: JSON) {
         
         self.useCurrentLocation = "useCurrentLocation" <~~ json ?? true

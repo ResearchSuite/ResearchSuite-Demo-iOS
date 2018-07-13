@@ -9,11 +9,11 @@
 import UIKit
 import Gloss
 
-open class RSTBChoiceItemDescriptor: Gloss.Decodable {
-    open let text: String
-    open let detailText: String?
-    open let value: NSCoding & NSCopying & NSObjectProtocol
-    open let exclusive: Bool
+open class RSTBChoiceItemDescriptor: Gloss.JSONDecodable {
+    public let text: String
+    public let detailText: String?
+    public let value: NSCoding & NSCopying & NSObjectProtocol
+    public let exclusive: Bool
     
     
     public required init?(json: JSON) {

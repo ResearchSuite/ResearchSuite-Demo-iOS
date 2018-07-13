@@ -11,9 +11,9 @@ import Gloss
 
 open class RSTBTextScaleStepDescriptor: RSTBQuestionStepDescriptor {
    
-    open let items: [RSTBChoiceItemDescriptor]
-    open let defaultIndex: Int
-    open let vertical: Bool
+    public let items: [RSTBChoiceItemDescriptor]
+    public let defaultIndex: Int
+    public let vertical: Bool
     
     public required init?(json: JSON) {
         

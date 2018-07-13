@@ -38,7 +38,8 @@ open class RSKeychainHelper: NSObject {
                 try ORKKeychainWrapper.resetKeychain()
             }
         } catch let error as NSError {
-            print(error.localizedDescription)
+            //TODO: handle this error?
+//            print(error.localizedDescription)
         }
     }
     
@@ -51,7 +52,7 @@ open class RSKeychainHelper: NSObject {
                 return o
             }
             else {
-                print("Got error \(error) when getting \(key). This may just be the key has not yet been set!!")
+//                print("Got error \(error) when getting \(key). This may just be the key has not yet been set!!")
                 return nil
             }
         }

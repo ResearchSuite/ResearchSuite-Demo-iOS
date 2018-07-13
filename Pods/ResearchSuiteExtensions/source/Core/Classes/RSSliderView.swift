@@ -1,14 +1,15 @@
 //
 //  RSSliderView.swift
-//  Pods
+//  ResearchSuiteExtensions
 //
-//  Created by James Kizer on 8/3/17.
-//
+//  Created by James Kizer on 4/24/18.
 //
 
 import UIKit
 
-open class RSSliderView: UIView {
+import UIKit
+
+open class RSSliderView: UIStackView {
     
     open class func newView(minimumValue: Int, maximumValue: Int, stepSize: Int = 1) -> RSSliderView? {
         let bundle = Bundle(for: RSSliderView.self)
@@ -34,15 +35,17 @@ open class RSSliderView: UIView {
         let panGestureRecognizer = UIPanGestureRecognizer(target: view, action: #selector(sliderTouched(_:)))
         view.sliderView.addGestureRecognizer(panGestureRecognizer)
         
-//        view.sliderView.isUserInteractionEnabled = false
+        //        view.sliderView.isUserInteractionEnabled = false
         
         view.minimumValue = minimumValue
         view.maximumValue = maximumValue
     }
-
+    
     public typealias OnValueChanged = (Int) -> Void
     public var onValueChanged: OnValueChanged?
     
+    
+    @IBOutlet public weak var textLabel: UILabel!
     @IBOutlet public weak var maxValueLabel: UILabel!
     @IBOutlet public weak var minValueLabel: UILabel!
     @IBOutlet weak var sliderView: RSSlider!
@@ -51,11 +54,13 @@ open class RSSliderView: UIView {
     @IBOutlet public weak var maxValueDescriptionLabel: UILabel!
     @IBOutlet public weak var currentValueLabel: UILabel!
     
+    
+    
     open var minimumValue: Int!
     open var maximumValue: Int!
     
     func valueForTouch(_ gestureRecognizer: UIGestureRecognizer) -> Int? {
-
+        
         //convert touch to slider
         let touchPoint = gestureRecognizer.location(in: self.sliderView)
         
@@ -76,7 +81,6 @@ open class RSSliderView: UIView {
     }
     
     @objc func sliderTouched(_ gestureRecognizer: UIGestureRecognizer) {
-        print(gestureRecognizer)
         
         guard let value = self.valueForTouch(gestureRecognizer) else {
             return
@@ -86,7 +90,7 @@ open class RSSliderView: UIView {
         self.internalSetValue(value: value, animated: true)
         
         //notify
-//        self.onValueChanged?(value)
+        //        self.onValueChanged?(value)
         
         self.sliderView.sendActions(for: .valueChanged)
         
@@ -97,7 +101,7 @@ open class RSSliderView: UIView {
         let roundedValue: Int = Int(round(sender.value))
         
         //set value
-//        self.internalSetValue(value: roundedValue, animated: true)
+        //        self.internalSetValue(value: roundedValue, animated: true)
         
         //notify
         self.onValueChanged?(roundedValue)
@@ -108,7 +112,7 @@ open class RSSliderView: UIView {
             value <= self.maximumValue {
             
             //this fixes case of +0
-//            self.currentValueLabel.text = self.numberFormatter.string(from: NSNumber(integerLiteral: value))
+            //            self.currentValueLabel.text = self.numberFormatter.string(from: NSNumber(integerLiteral: value))
             self.sliderView.showThumb = true
             //            self.sliderView.setThumbImage(self.savedThumbImage, for: .normal)
             self.sliderView.setValue(Float(value), animated: animated)
@@ -126,5 +130,5 @@ open class RSSliderView: UIView {
         self.internalSetValue(value: value, animated: animated)
         self.onValueChanged?(value)
     }
-
+    
 }

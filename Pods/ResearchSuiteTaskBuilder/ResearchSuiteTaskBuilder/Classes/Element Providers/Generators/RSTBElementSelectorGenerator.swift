@@ -16,7 +16,7 @@ open class RSTBElementSelectorGenerator: RSTBBaseElementGenerator {
         "elementSelector"
     ]
     
-    open var supportedTypes: [String]! {
+    public var supportedTypes: [String]! {
         return self._supportedTypes
     }
     

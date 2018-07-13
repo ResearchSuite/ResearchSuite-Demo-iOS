@@ -11,17 +11,17 @@ import Gloss
 
 open class RSTBAnswerFormatGeneratorService: NSObject {
     
-    static fileprivate var _service: RSTBAnswerFormatGeneratorService = RSTBAnswerFormatGeneratorService()
-    static open var service: RSTBAnswerFormatGeneratorService {
+    static private var _service: RSTBAnswerFormatGeneratorService = RSTBAnswerFormatGeneratorService()
+    static public var service: RSTBAnswerFormatGeneratorService {
         return _service
     }
     
-    static open func initialize(services: [RSTBAnswerFormatGenerator]) {
+    static public func initialize(services: [RSTBAnswerFormatGenerator]) {
         
         self._service = RSTBAnswerFormatGeneratorService(services: services)
     }
     
-    fileprivate var loader: RSTBServiceLoader<RSTBAnswerFormatGenerator>!
+    private var loader: RSTBServiceLoader<RSTBAnswerFormatGenerator>!
     
     public convenience override init() {
         let services:[RSTBAnswerFormatGenerator] = []
@@ -34,7 +34,7 @@ open class RSTBAnswerFormatGeneratorService: NSObject {
         self.loader = loader
     }
     
-    open func generateAnswerFormat(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKAnswerFormat? {
+    public func generateAnswerFormat(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKAnswerFormat? {
         
         let generators = self.loader.iterator()
         
@@ -49,7 +49,7 @@ open class RSTBAnswerFormatGeneratorService: NSObject {
         
     }
     
-    open func processQuestionResult(type: String, result: ORKQuestionResult, helper: RSTBTaskBuilderHelper) -> JSON? {
+    public func processQuestionResult(type: String, result: ORKQuestionResult, helper: RSTBTaskBuilderHelper) -> JSON? {
         let generators = self.loader.iterator()
         
         for generator in generators {

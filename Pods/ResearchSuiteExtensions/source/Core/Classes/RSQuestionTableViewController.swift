@@ -200,7 +200,7 @@ open class RSQuestionTableViewController: ORKStepViewController, UITableViewData
         cell.textLabel?.text = "Default Cell"
         cell.detailTextLabel?.text = "You should override cellForRowAt"
         
-        printResponderChain(self)
+//        printResponderChain(self)
         
         return cell
     }
@@ -208,18 +208,18 @@ open class RSQuestionTableViewController: ORKStepViewController, UITableViewData
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        printResponderChain(self)
+//        printResponderChain(self)
     }
 
-    open func printResponderChain(_ responder: UIResponder?) {
-        
-        guard let responder = responder else {
-            return
-        }
-        
-        print("responder is \(responder)")
-        printResponderChain(responder.next)
-    }
+//    open func printResponderChain(_ responder: UIResponder?) {
+//        
+//        guard let responder = responder else {
+//            return
+//        }
+//        
+//        print("responder is \(responder)")
+//        printResponderChain(responder.next)
+//    }
     
     open func clearAnswer() {
         self.skipped = true

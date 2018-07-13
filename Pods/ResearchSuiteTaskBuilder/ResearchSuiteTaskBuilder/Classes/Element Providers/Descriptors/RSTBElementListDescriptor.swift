@@ -10,8 +10,8 @@ import Gloss
 
 open class RSTBElementListDescriptor: RSTBElementDescriptor {
     
-    open let elementList: [JSON]!
-    open let shuffled: Bool
+    public let elementList: [JSON]!
+    public let shuffled: Bool
     
     // MARK: - Deserialization
     

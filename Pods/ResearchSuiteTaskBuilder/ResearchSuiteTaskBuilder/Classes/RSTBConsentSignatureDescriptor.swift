@@ -11,12 +11,12 @@ import Gloss
 
 open class RSTBConsentSignatureDescriptor: RSTBElementDescriptor {
     
-    open let title: String?
-    open let dateFormatString: String?
-    open let givenName: String?
-    open let familyName: String?
-    open let signatureImageTitle: String?
-    open let signatureDateString: String?
+    public let title: String?
+    public let dateFormatString: String?
+    public let givenName: String?
+    public let familyName: String?
+    public let signatureImageTitle: String?
+    public let signatureDateString: String?
     
     // MARK: - Deserialization
     

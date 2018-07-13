@@ -4,36 +4,40 @@
 //
 //  Created by James Kizer on 12/26/17.
 //
+//
+// Copyright 2018, Curiosity Health Company
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import UIKit
-import SecureQueue
 import Alamofire
-import OMHClient
-
-public protocol LS2CredentialStore {
-    func set(value: NSSecureCoding?, key: String)
-    func get(key: String) -> NSSecureCoding?
-}
-
-public protocol LS2Logger {
-    func log(_ debugString: String)
-}
+import ResearchSuiteExtensions
 
 public protocol LS2ManagerDelegate: class {
-    
     func onInvalidToken(manager: LS2Manager) -> Bool
-    
 }
 
 open class LS2Manager: NSObject {
     
-    static let kAuthToken = "AuthToken"
+    static let kAuthToken = "ls2_auth_token"
+    static let kUsername = "ls2_username"
+    static let kPassword = "ls2_password"
     
     var client: LS2Client!
-    var secureQueue: SecureQueue!
+    var datapointQueue: RSGlossyQueue<LS2ConcreteDatapoint>
     
     var credentialsQueue: DispatchQueue!
-    var credentialStore: LS2CredentialStore!
+    var credentialStore: RSCredentialsStore!
     var credentialStoreQueue: DispatchQueue!
     var authToken: String?
     
@@ -44,21 +48,22 @@ open class LS2Manager: NSObject {
     
     var protectedDataAvaialbleObserver: NSObjectProtocol!
     
-    var logger: LS2Logger?
+    static var TAG = "LS2Manager"
+    public var logger: RSLogger?
     public weak var delegate: LS2ManagerDelegate?
     
     public init?(
         baseURL: String,
         queueStorageDirectory: String,
-        store: LS2CredentialStore,
-        logger: LS2Logger? = nil,
+        store: RSCredentialsStore,
+        logger: RSLogger? = nil,
         serverTrustPolicyManager: ServerTrustPolicyManager? = nil
         ) {
         
         self.uploadQueue = DispatchQueue(label: "UploadQueue")
         
         self.client = LS2Client(baseURL: baseURL, dispatchQueue: self.uploadQueue, serverTrustPolicyManager: serverTrustPolicyManager)
-        self.secureQueue = SecureQueue(directoryName: queueStorageDirectory, allowedClasses: [NSDictionary.self, NSArray.self])
+        self.datapointQueue = RSGlossyQueue(directoryName: queueStorageDirectory, allowedClasses: [NSDictionary.self, NSArray.self])!
         
         self.credentialsQueue = DispatchQueue(label: "CredentialsQueue")
         
@@ -92,7 +97,7 @@ open class LS2Manager: NSObject {
                 do {
                     try startUploading()
                 } catch let error {
-                    debugPrint(error)
+                    self?.logger?.log(tag: LS2Manager.TAG, level: .error, message: "an error occurred when first trying to upload \(error)")
                 }
             }
         }
@@ -106,8 +111,7 @@ open class LS2Manager: NSObject {
             do {
                 try startUploading()
             } catch let error as NSError {
-                self?.logger?.log("error occurred when starting upload after device unlock: \(error.localizedDescription)")
-                debugPrint(error)
+                self?.logger?.log(tag: LS2Manager.TAG, level: .error, message: "error occurred when starting upload after device unlock: \(error.localizedDescription)")
             }
             
         }
@@ -116,6 +120,43 @@ open class LS2Manager: NSObject {
     
     deinit {
         NotificationCenter.default.removeObserver(self.protectedDataAvaialbleObserver)
+    }
+    
+    public func generateParticipantAccount(generatorCredentials: LS2ParticipantAccountGeneratorCredentials, completion: @escaping ((Error?) -> ())) {
+        //check for credentials
+        if self.hasCredentials {
+            completion(LS2ManagerErrors.hasCredentials)
+            return
+        }
+        
+        self.client.generateParticipantAccount(generatorCredentials: generatorCredentials) { (response, error) in
+            
+            if let err = error {
+                
+                completion(err)
+                return
+                
+            }
+            
+            if let credentials = response {
+                self.setCredentials(username: credentials.username, password: credentials.password)
+            }
+            
+            completion(nil) 
+            
+        }
+        
+        //call client
+    }
+    
+    public func signInWithCredentials(forceSignIn:Bool = false, completion: @escaping ((Error?) -> ())) {
+        guard let username = self.getUsername(),
+            let password = self.getPassword() else {
+                completion(LS2ManagerErrors.doesNotHaveCredentials)
+                return
+        }
+        
+        self.signIn(username: username, password: password, forceSignIn: forceSignIn, completion: completion)
     }
     
     public func signIn(username: String, password: String, forceSignIn:Bool = false, completion: @escaping ((Error?) -> ())) {
@@ -136,7 +177,7 @@ open class LS2Manager: NSObject {
             }
             
             if let response = signInResponse {
-                self.setCredentials(authToken: response.authToken)
+                self.setAuthToken(authToken: response.authToken)
             }
             
             self.reachabilityManager.startListening()
@@ -166,7 +207,7 @@ open class LS2Manager: NSObject {
                                 if shouldLogOut { self.signOut(completion: { (error) in }) }
                             }
                             else {
-                                self.logger?.log("invalid access token: clearing")
+                                self.logger?.log(tag: LS2Manager.TAG, level: .warn, message: "invalid access token: clearing")
                                 self.signOut(completion: { (error) in })
                             }
                             
@@ -195,7 +236,7 @@ open class LS2Manager: NSObject {
                 
                 self.reachabilityManager.stopListening()
                 
-                try self.secureQueue.clear()
+                try self.datapointQueue.clear()
                 self.clearCredentials()
                 
                 completion(nil)
@@ -219,25 +260,51 @@ open class LS2Manager: NSObject {
         return self.getAuthToken() != nil
     }
     
+    public var hasCredentials: Bool {
+        return self.credentialsQueue.sync {
+            
+            guard let _ = self.credentialStore.get(key: LS2Manager.kUsername),
+                let _ = self.credentialStore.get(key: LS2Manager.kPassword) else {
+                    return false
+            }
+            
+            return true
+        }
+    }
+    
+    
+    
     public var queueIsEmpty: Bool {
-        return self.secureQueue.isEmpty
+        return self.datapointQueue.isEmpty
     }
     
     public var queueItemCount: Int {
-        return self.secureQueue.count
+        return self.datapointQueue.count
     }
     
     private func clearCredentials() {
         self.credentialsQueue.sync {
             self.credentialStoreQueue.async {
                 self.credentialStore.set(value: nil, key: LS2Manager.kAuthToken)
+                self.credentialStore.set(value: nil, key: LS2Manager.kUsername)
+                self.credentialStore.set(value: nil, key: LS2Manager.kPassword)
             }
             self.authToken = nil
             return
         }
     }
     
-    private func setCredentials(authToken: String) {
+    private func setCredentials(username: String, password: String) {
+        self.credentialsQueue.sync {
+            self.credentialStoreQueue.async {
+                self.credentialStore.set(value: username as NSString, key: LS2Manager.kUsername)
+                self.credentialStore.set(value: password as NSString, key: LS2Manager.kPassword)
+            }
+            return
+        }
+    }
+    
+    private func setAuthToken(authToken: String) {
         self.credentialsQueue.sync {
             self.credentialStoreQueue.async {
                 self.credentialStore.set(value: authToken as NSString, key: LS2Manager.kAuthToken)
@@ -247,37 +314,44 @@ open class LS2Manager: NSObject {
         }
     }
     
+    public func getUsername() -> String? {
+        return self.credentialsQueue.sync {
+            return self.credentialStoreQueue.sync {
+                return self.credentialStore.get(key: LS2Manager.kUsername) as? String
+            }
+        }
+    }
+
+    public func getPassword() -> String? {
+        return self.credentialsQueue.sync {
+            return self.credentialStoreQueue.sync {
+                return self.credentialStore.get(key: LS2Manager.kPassword) as? String
+            }
+        }
+    }
+
     private func getAuthToken() -> String? {
         return self.credentialsQueue.sync {
             return self.authToken
         }
     }
     
-    public func addDatapoint(datapoint: OMHDataPoint, completion: @escaping ((Error?) -> ())) {
-        
+    public func addDatapoint(datapoint: LS2ConcreteDatapoint, completion: @escaping ((Error?) -> ())) {
         if !self.isSignedIn {
             completion(LS2ManagerErrors.notSignedIn)
             return
         }
         
-        if !self.client.validateSample(sample: datapoint) {
-            NSLog("validation error")
-            completion(LS2ManagerErrors.invalidDatapoint)
-            return
-        }
+        //vaidation is done by the queue
+        //        if !self.client.validateDatapoint(datapoint: datapoint) {
+        //            completion(LS2ManagerErrors.invalidDatapoint)
+        //            return
+        //        }
         
         do {
             
-            var elementDictionary: [String: Any] = [
-                "datapoint": datapoint.toDict()
-            ]
+            try self.datapointQueue.addGlossyElement(element: datapoint)
             
-            if let mediaDatapoint = datapoint as? OMHMediaDataPoint {
-                assertionFailure("media not yet supported!!")
-                elementDictionary["mediaAttachments"] = mediaDatapoint.attachments as NSArray
-            }
-            
-            try self.secureQueue.addElement(element: elementDictionary as NSDictionary)
         } catch let error {
             completion(error)
             return
@@ -285,6 +359,17 @@ open class LS2Manager: NSObject {
         
         self.upload(fromMemory: false)
         completion(nil)
+    }
+    
+    public func addDatapoint(datapointConvertible: LS2DatapointConvertible, completion: @escaping ((Error?) -> ())) {
+        
+        //this will always pass, but need to wrap in concrete datapoint type
+        guard let concreteDatapoint =  datapointConvertible.toDatapoint(builder: LS2ConcreteDatapoint.self) as? LS2ConcreteDatapoint else {
+            completion(LS2ManagerErrors.programmingError)
+            return
+        }
+        
+        self.addDatapoint(datapoint: concreteDatapoint, completion: completion)
         
     }
     
@@ -301,60 +386,49 @@ open class LS2Manager: NSObject {
         
         self.uploadQueue.async {
             
-            guard let queue = self.secureQueue,
-                !queue.isEmpty,
+            let queue = self.datapointQueue
+            guard !queue.isEmpty,
                 !self.isUploading else {
                     return
             }
             
-            let wappedGetFunction: () throws -> (String, NSSecureCoding)? = {
+            let wappedGetFunction: () throws -> RSGlossyQueue<LS2ConcreteDatapoint>.RSGlossyQueueElement? = {
                 
                 if fromMemory {
-                    return self.secureQueue.getFirstInMemoryElement()
+                    return try self.datapointQueue.getFirstInMemoryGlossyElement()
                 }
                 else {
-                    return try self.secureQueue.getFirstElement()
+                    return try self.datapointQueue.getFirstGlossyElement()
                 }
                 
             }
             
             do {
                 
-                if let (elementId, value) = try wappedGetFunction(),
-                    let dataPointDict = value as? [String: Any],
-                    let datapoint = dataPointDict["datapoint"] as? [String: Any],
+                if let elementPair = try wappedGetFunction(),
                     let token = self.authToken {
-                    
-                    assert(dataPointDict["mediaAttachments"] == nil, "Media attachments are not yet supported")
-//                    let mediaAttachments: [OMHMediaAttachment]? = dataPointDict["mediaAttachments"] as? [OMHMediaAttachment]
-//                    let mediaAttachmentUploadSuccess = self.onMediaAttachmentUploaded
-//                    let datapointUploadSuccess = self.onDatapointUploaded
-                    
+
+                    let datapoint: LS2Datapoint = elementPair.element
                     self.isUploading = true
+                    self.logger?.log(tag: LS2Manager.TAG, level: .info, message: "posting datapoint with id: \(String(describing: datapoint.header?.id))")
                     
-                    if let datapointHeader = datapoint["header"] as? [String: Any],
-                        let datapointId = datapointHeader["id"] as? String {
-                        self.logger?.log("posting datapoint with id: \(datapointId)")
-                    }
-                    
-                    self.client.postSample(sampleDict: datapoint, token: token, completion: { (success, error) in
+                    self.client.postDatapoint(datapoint: datapoint, token: token, completion: { (success, error) in
                         
                         self.isUploading = false
-                        self.processUploadResponse(elementId: elementId, fromMemory: fromMemory, success: success, error: error)
+                        self.processUploadResponse(element: elementPair, fromMemory: fromMemory, success: success, error: error)
                         
                     })
 
                 }
                 
                 else {
-                    self.logger?.log("either we couldnt load a valid datapoint or there is no token")
+                    self.logger?.log(tag: LS2Manager.TAG, level: .info, message: "either we couldnt load a valid datapoint or there is no token")
                 }
                 
                 
             } catch let error {
                 //assume file system encryption error when tryong to read
-                self.logger?.log("secure queue threw when trying to get first element: \(error)")
-                debugPrint(error)
+                self.logger?.log(tag: LS2Manager.TAG, level: .error, message: "secure queue threw when trying to get first element: \(error)")
                 
                 //try uploading datapoint from memory
                 self.upload(fromMemory: true)
@@ -365,11 +439,10 @@ open class LS2Manager: NSObject {
     
     }
     
-    private func processUploadResponse(elementId: String, fromMemory: Bool, success: Bool, error: Error?) {
+    private func processUploadResponse(element: RSGlossyQueue<LS2ConcreteDatapoint>.RSGlossyQueueElement, fromMemory: Bool, success: Bool, error: Error?) {
         
         if let err = error {
-            debugPrint(err)
-            self.logger?.log("Got error while posting datapoint: \(error.debugDescription)")
+            self.logger?.log(tag: LS2Manager.TAG, level: .error, message: "Got error while posting datapoint: \(error.debugDescription)")
             //should we retry here?
             // and if so, under what conditions
             
@@ -385,7 +458,7 @@ open class LS2Manager: NSObject {
                     if shouldLogOut { self.signOut(completion: { (error) in }) }
                 }
                 else {
-                    self.logger?.log("invalid access token: clearing")
+                    self.logger?.log(tag: LS2Manager.TAG, level: .info, message: "invalid access token: clearing")
                     self.signOut(completion: { (error) in })
                 }
                 
@@ -394,14 +467,14 @@ open class LS2Manager: NSObject {
             //we can remove it from the queue
             case .some(LS2ClientError.dataPointConflict):
                 
-                self.logger?.log("datapoint conflict: removing")
+                self.logger?.log(tag: LS2Manager.TAG, level: .info, message: "datapoint conflict: removing")
                 
                 do {
-                    try self.secureQueue.removeElement(elementId: elementId)
+                    try self.datapointQueue.removeGlossyElement(element: element)
                     
                 } catch let error {
-                    //we tried to delete,
-                    debugPrint(error)
+                    //we tried to delete
+                    self.logger?.log(tag: LS2Manager.TAG, level: .error, message: "An error occured when trying to remove the datapoint \(error)")
                 }
                 
                 self.upload(fromMemory: fromMemory)
@@ -411,21 +484,21 @@ open class LS2Manager: NSObject {
             //we can remove it from the queue
             case .some(LS2ClientError.invalidDatapoint):
                 
-                self.logger?.log("datapoint invalid: removing")
+                self.logger?.log(tag: LS2Manager.TAG, level: .info, message: "datapoint invalid: removing")
                 
                 do {
-                    try self.secureQueue.removeElement(elementId: elementId)
+                    try self.datapointQueue.removeGlossyElement(element: element)
                     
                 } catch let error {
                     //we tried to delete,
-                    debugPrint(error)
+                    self.logger?.log(tag: LS2Manager.TAG, level: .error, message: "An error occurred when trying to remove the element \(error)")
                 }
                 
                 self.upload(fromMemory: fromMemory)
                 return
                 
             case .some(LS2ClientError.badGatewayError):
-                self.logger?.log("bad gateway")
+                self.logger?.log(tag: LS2Manager.TAG, level: .warn, message: "bad gateway")
                 return
                 
             default:
@@ -433,24 +506,24 @@ open class LS2Manager: NSObject {
                 let nsError = err as NSError
                 switch (nsError.code) {
                 case NSURLErrorNetworkConnectionLost:
-                    self.logger?.log("We have an internet connecction, but cannot connect to the server. Is it down?")
+                    self.logger?.log(tag: LS2Manager.TAG, level: .warn, message: "We have an internet connecction, but cannot connect to the server. Is it down?")
                     return
                     
                 default:
-                    self.logger?.log("other error: \(nsError)")
+                    self.logger?.log(tag: LS2Manager.TAG, level: .error, message: "other error: \(nsError)")
                     break
                 }
             }
             
         } else if success {
             //remove from queue
-            self.logger?.log("success: removing data point")
+            self.logger?.log(tag: LS2Manager.TAG, level: .info, message: "success: removing data point")
             do {
-                try self.secureQueue.removeElement(elementId: elementId)
+                try self.datapointQueue.removeGlossyElement(element: element)
                 
             } catch let error {
                 //we tried to delete,
-                debugPrint(error)
+                self.logger?.log(tag: LS2Manager.TAG, level: .error, message: "An error occurred when trying to remove the element \(error)")
             }
             
             self.upload(fromMemory: fromMemory)

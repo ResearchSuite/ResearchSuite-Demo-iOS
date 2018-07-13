@@ -11,17 +11,17 @@ import Gloss
 
 open class RSTBElementGeneratorService: NSObject {
     
-    static fileprivate var _service: RSTBElementGeneratorService = RSTBElementGeneratorService()
-    static open var service: RSTBElementGeneratorService {
+    static private var _service: RSTBElementGeneratorService = RSTBElementGeneratorService()
+    static public var service: RSTBElementGeneratorService {
         return _service
     }
     
-    static open func initialize(services: [RSTBElementGenerator]) {
+    static public func initialize(services: [RSTBElementGenerator]) {
         
         self._service = RSTBElementGeneratorService(services: services)
     }
     
-    fileprivate var loader: RSTBServiceLoader<RSTBElementGenerator>!
+    private var loader: RSTBServiceLoader<RSTBElementGenerator>!
     
     public override convenience init() {
         let services:[RSTBElementGenerator] = []

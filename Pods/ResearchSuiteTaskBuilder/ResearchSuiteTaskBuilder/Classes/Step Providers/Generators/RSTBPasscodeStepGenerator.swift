@@ -18,7 +18,7 @@ open class RSTBPasscodeStepGenerator: RSTBBaseStepGenerator {
         "passcode"
     ]
     
-    open var supportedTypes: [String]! {
+    public var supportedTypes: [String]! {
         return self._supportedTypes
     }
     

@@ -17,7 +17,7 @@ open class RSTBConsentReviewStepGenerator: RSTBBaseStepGenerator {
         "consentReview"
     ]
     
-    open var supportedTypes: [String]! {
+    public var supportedTypes: [String]! {
         return self._supportedTypes
     }
     
@@ -40,7 +40,7 @@ open class RSTBConsentReviewStepGenerator: RSTBBaseStepGenerator {
         return step
     }
     
-    open func processStepResult(type: String, jsonObject: JsonObject, result: ORKStepResult, helper: RSTBTaskBuilderHelper) -> JSON? {
+    public func processStepResult(type: String, jsonObject: JsonObject, result: ORKStepResult, helper: RSTBTaskBuilderHelper) -> JSON? {
         return nil
     }
     

@@ -10,10 +10,10 @@ import Gloss
 
 open class RSTBIntegerStepDescriptor: RSTBQuestionStepDescriptor {
     
-    open class Range: Gloss.Decodable {
-        open let min: Int!
-        open let max: Int!
-        open let unit: String?
+    open class Range: Gloss.JSONDecodable {
+        public let min: Int!
+        public let max: Int!
+        public let unit: String?
         
         public required init?(json: JSON) {
             
@@ -24,7 +24,7 @@ open class RSTBIntegerStepDescriptor: RSTBQuestionStepDescriptor {
         }
     }
     
-    open let range: Range!
+    public let range: Range!
     public required init?(json: JSON) {
         
         self.range = "range" <~~ json

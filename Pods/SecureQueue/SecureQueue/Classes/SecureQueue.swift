@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class SecureQueue: NSObject {
+open class SecureQueue: NSObject {
     
     var directoryPath: String!
     var secureMap: SecurePersistentMap!
@@ -65,7 +65,7 @@ public class SecureQueue: NSObject {
         do {
             mapElements = try Set(secureMap.keys())
         } catch let error as NSError {
-            print(error.localizedDescription)
+//            print(error.localizedDescription)
             return nil
         }
         
@@ -80,7 +80,7 @@ public class SecureQueue: NSObject {
             //get set subtraction, log that these elements are being dropped
             let droppedElements = queueElements.subtracting(mapElements)
             droppedElements.forEach({ (elementID) in
-                print("dropping element: \(elementID)")
+//                print("dropping element: \(elementID)")
             })
             
             queueElements = queueElements.intersection(mapElements)
@@ -100,7 +100,7 @@ public class SecureQueue: NSObject {
             } catch let error as NSError {
                 //note that this isnt necessarily the worst thing in the world,
                 //we can probably still continue depending on the error
-                print(error.localizedDescription)
+//                print(error.localizedDescription)
                 
             }
         })
@@ -121,7 +121,7 @@ public class SecureQueue: NSObject {
         }
         
         self.directoryPath = documentsPath.appending("/\(directoryName)")
-        print(self.directoryPath)
+//        print(self.directoryPath)
         
         guard let secureMap = SecurePersistentMap(directoryName: self.directoryPath.appending("/data"), allowedClasses: allowedClasses) else {
             return nil
@@ -132,7 +132,7 @@ public class SecureQueue: NSObject {
         do {
             elementIDList = try self.loadQueue()
         } catch let error as NSError {
-            print(error.localizedDescription)
+//            print(error.localizedDescription)
         }
         
         guard let (syncdElelemtIDList, syncdSecureMap) = self.syncQueueAndMap(elementIDList: elementIDList, secureMap: secureMap) else { return nil }
@@ -165,13 +165,15 @@ public class SecureQueue: NSObject {
                 } catch let error as NSError {
                     
                     //what happens if we can't save the queue?
-                    print(error.localizedDescription)
+//                    print(error.localizedDescription)
                 }
             }
             
         }
         
     }
+    
+    
     
     //may need to turn this into callback
     public func removeElement(elementId: String) throws {
@@ -201,7 +203,7 @@ public class SecureQueue: NSObject {
                 } catch let error as NSError {
                     
                     //what happens if we can't save the queue?
-                    print(error.localizedDescription)
+//                    print(error.localizedDescription)
                 }
                 
                 
@@ -228,6 +230,34 @@ public class SecureQueue: NSObject {
             }
             else {
                 return nil
+            }
+            
+        }
+        
+    }
+    
+    public func getElements() throws -> [(String, NSSecureCoding)] {
+        
+        return try self.elementsLockQueue.sync {
+            
+            if let front: String = self.elementIDList.first {
+                
+                return try self.secureMapLockQueue.sync {
+                    
+                    let pairs: [(String, NSSecureCoding)] = try self.elementIDList.compactMap { id in
+                        if let value = try self.secureMap.getValue(forKey: id) {
+                            return (id, value)
+                        }
+                        else {
+                            return nil
+                        }
+                    }
+                    
+                    return pairs
+                }
+            }
+            else {
+                return []
             }
             
         }
@@ -263,6 +293,30 @@ public class SecureQueue: NSObject {
         
     }
     
+    public func getInMemoryElements() throws -> [(String, NSSecureCoding)] {
+        
+        return try self.elementsLockQueue.sync {
+                
+            return try self.secureMapLockQueue.sync {
+            
+                let inMemoryElements = Set(self.secureMap.keysInMemory())
+                
+                let pairs: [(String, NSSecureCoding)] = try inMemoryElements.compactMap { id in
+                    if let value = try self.secureMap.getValue(forKey: id) {
+                        return (id, value)
+                    }
+                    else {
+                        return nil
+                    }
+                }
+                
+                return pairs
+            }
+            
+        }
+        
+    }
+    
     public var isEmpty: Bool {
         return self.elementsLockQueue.sync {
             return self.elementIDList.isEmpty
@@ -278,7 +332,7 @@ public class SecureQueue: NSObject {
                     try self.secureMap.removeAll()
                 }
             } catch let error {
-                debugPrint(error)
+//                debugPrint(error)
             }
         }
         

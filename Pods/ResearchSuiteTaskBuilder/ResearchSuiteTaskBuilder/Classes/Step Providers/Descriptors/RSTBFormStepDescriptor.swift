@@ -10,7 +10,7 @@ import Gloss
 
 open class RSTBFormStepDescriptor: RSTBStepDescriptor {
     
-    open let items: [JSON]
+    public let items: [JSON]
     
     public required init?(json: JSON) {
         

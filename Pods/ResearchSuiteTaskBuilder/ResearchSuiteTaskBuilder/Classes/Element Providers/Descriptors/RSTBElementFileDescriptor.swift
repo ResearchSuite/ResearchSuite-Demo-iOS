@@ -10,7 +10,7 @@ import Gloss
 
 open class RSTBElementFileDescriptor: RSTBElementDescriptor {
     
-    open let elementFilename: String!
+    public let elementFilename: String!
     
     // MARK: - Deserialization
     

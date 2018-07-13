@@ -24,7 +24,7 @@ class RSTBConsentSignatureGeneratorService: NSObject {
         super.init()
     }
     
-    open func generate(type: String,
+    public func generate(type: String,
                          jsonObject: JSON,
                          helper:RSTBTaskBuilderHelper) -> ORKConsentSignature? {
         return self.generators

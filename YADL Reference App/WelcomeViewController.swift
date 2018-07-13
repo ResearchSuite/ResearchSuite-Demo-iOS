@@ -9,8 +9,8 @@
 import UIKit
 import ResearchKit
 import ResearchSuiteTaskBuilder
-import ResearchSuiteAppFramework
 import LS2SDK
+import ResearchSuiteAppFramework
 
 class WelcomeViewController: UIViewController {
     

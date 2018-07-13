@@ -4,15 +4,44 @@
 //
 //  Created by James Kizer on 12/26/17.
 //
+//
+// Copyright 2018, Curiosity Health Company
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import UIKit
 import Alamofire
-import OMHClient
+
+open class LS2ParticipantAccountGeneratorCredentials: NSObject {
+    public let generatorId: String
+    public let generatorPassword: String
+    
+    public init(generatorId: String, generatorPassword: String) {
+        self.generatorId = generatorId
+        self.generatorPassword = generatorPassword
+        super.init()
+    }
+}
 
 open class LS2Client: NSObject {
     
     public struct SignInResponse {
         public let authToken: String
+    }
+    
+    public struct ParticipantAccountGenerationResponse: Decodable {
+        public let username: String
+        public let password: String
     }
     
     let baseURL: String
@@ -31,13 +60,10 @@ open class LS2Client: NSObject {
         super.init()
     }
     
-    open func processAuthResponse(isRefresh: Bool, completion: @escaping ((SignInResponse?, Error?) -> ())) -> ((DataResponse<Any>) -> ()) {
-        
+    open func processParticipantAccountGenerationResponse(completion: @escaping ((ParticipantAccountGenerationResponse?, Error?) -> ())) -> (DataResponse<Any>) -> () {
         return { jsonResponse in
-            
-            debugPrint(jsonResponse)
             //check for lower level errors
-            if let error = jsonResponse.result.error as? NSError {
+            if let error = jsonResponse.result.error as NSError? {
                 if error.code == NSURLErrorNotConnectedToInternet {
                     completion(nil, LS2ClientError.unreachableError(underlyingError: error))
                     return
@@ -55,9 +81,66 @@ open class LS2Client: NSObject {
                 return
             }
             
-            if let response = jsonResponse.response,
-                response.statusCode == 502 {
-                debugPrint(jsonResponse)
+            if response.statusCode == 502 {
+                completion(nil, LS2ClientError.badGatewayError)
+                return
+            }
+            
+            guard jsonResponse.result.isSuccess,
+                let jsonData = jsonResponse.data,
+                let credentials = try? JSONDecoder().decode(ParticipantAccountGenerationResponse.self, from: jsonData) else {
+                    completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
+                    return
+            }
+            
+            completion(credentials, nil)
+        }
+    }
+    
+    open func generateParticipantAccount(generatorCredentials: LS2ParticipantAccountGeneratorCredentials, completion: @escaping ((ParticipantAccountGenerationResponse?, Error?) -> ())) {
+        
+        let urlString = "\(self.baseURL)/account/generate"
+        let parameters = [
+            "generator_id": generatorCredentials.generatorId,
+            "generator_password": generatorCredentials.generatorPassword
+        ]
+        
+        let request = self.sessionManager.request(
+            urlString,
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default)
+        
+        request.responseJSON(queue: self.dispatchQueue, completionHandler: self.processParticipantAccountGenerationResponse(completion: completion))
+        
+    }
+    
+    
+    
+    open func processAuthResponse(isRefresh: Bool, completion: @escaping ((SignInResponse?, Error?) -> ())) -> ((DataResponse<Any>) -> ()) {
+        
+        return { jsonResponse in
+            
+            //check for lower level errors
+            if let error = jsonResponse.result.error as NSError? {
+                if error.code == NSURLErrorNotConnectedToInternet {
+                    completion(nil, LS2ClientError.unreachableError(underlyingError: error))
+                    return
+                }
+                else {
+                    completion(nil, LS2ClientError.otherError(underlyingError: error))
+                    return
+                }
+            }
+            
+            //check for our errors
+            //credentialsFailure
+            guard let response = jsonResponse.response else {
+                completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse))
+                return
+            }
+            
+            if response.statusCode == 502 {
                 completion(nil, LS2ClientError.badGatewayError)
                 return
             }
@@ -114,11 +197,8 @@ open class LS2Client: NSObject {
         return { jsonResponse in
             //check for actually success
             
-            debugPrint(jsonResponse)
-            
             switch jsonResponse.result {
             case .success:
-                print("Validation Successful")
                 guard let response = jsonResponse.response else {
                     completion(false, LS2ClientError.unknownError)
                     return
@@ -170,24 +250,38 @@ open class LS2Client: NSObject {
         
         
     }
-    
-    
-    
-    open func validateSample(sample: OMHDataPoint) -> Bool {
+
+    open func validateDatapoint(datapoint: LS2Datapoint) -> Bool {
         
-        let sampleDict = sample.toDict()
-        NSLog("sample Dict test")
-        NSLog(String(describing: sampleDict))
-        return JSONSerialization.isValidJSONObject(sampleDict)
+        guard let json = datapoint.toJSON() else {
+            return false
+        }
+        
+        return JSONSerialization.isValidJSONObject(json)
         
     }
-    
-    open func postSample(
-        sampleDict: OMHDataPointDictionary,
-        token: String,
-        completion: @escaping ((Bool, Error?) -> ())) {
+
+    open func postDatapoint(datapoint: LS2Datapoint, token: String, completion: @escaping ((Bool, Error?) -> ())) {
         
-        self.postJSONSample(sampleDict: sampleDict, token: token, completion: completion)
+        let urlString = "\(self.baseURL)/dataPoints"
+        let headers = ["Authorization": "Token \(token)", "Accept": "application/json"]
+        
+        guard let datapointJSON = datapoint.toJSON(),
+            JSONSerialization.isValidJSONObject(datapointJSON) else {
+            completion(false, LS2ClientError.invalidDatapoint)
+            return
+        }
+        
+        let request = self.sessionManager.request(
+            urlString,
+            method: .post,
+            parameters: datapointJSON,
+            encoding: JSONEncoding.default,
+            headers: headers)
+        
+        let reponseProcessor: (DataResponse<Any>) -> () = self.processDatapointUploadResponse(completion: completion)
+        
+        request.responseJSON(queue: self.dispatchQueue, completionHandler: reponseProcessor)
         
     }
     
@@ -212,7 +306,6 @@ open class LS2Client: NSObject {
         return { jsonResponse in
             //check for actually success
             
-            debugPrint(jsonResponse)
             //check for lower level errors
             if let error = jsonResponse.result.error as NSError? {
                 if error.code == NSURLErrorNotConnectedToInternet {
@@ -227,21 +320,18 @@ open class LS2Client: NSObject {
             
             //check for our errors
             //credentialsFailure
-            guard let _ = jsonResponse.response else {
+            guard let response = jsonResponse.response else {
                 completion(false, LS2ClientError.malformedResponse(responseBody: jsonResponse))
                 return
             }
             
-            if let response = jsonResponse.response,
-                response.statusCode == 502 {
-                debugPrint(jsonResponse)
+            if response.statusCode == 502 {
                 completion(false, LS2ClientError.badGatewayError)
                 return
             }
             
             //check for malformed body
             guard jsonResponse.result.isSuccess,
-                let response = jsonResponse.response,
                 response.statusCode == 200 else {
                     completion(false, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
                     return
@@ -253,39 +343,13 @@ open class LS2Client: NSObject {
         
     }
 
-    private func postJSONSample(sampleDict: OMHDataPointDictionary, token: String, completion: @escaping ((Bool, Error?) -> ())) {
-        let urlString = "\(self.baseURL)/dataPoints"
-        let headers = ["Authorization": "Token \(token)", "Accept": "application/json"]
-        let params = sampleDict
-        
-        guard JSONSerialization.isValidJSONObject(sampleDict) else {
-            completion(false, LS2ClientError.invalidDatapoint)
-            return
-        }
-        
-        let request = self.sessionManager.request(
-            urlString,
-            method: .post,
-            parameters: params,
-            encoding: JSONEncoding.default,
-            headers: headers)
-        
-        let reponseProcessor: (DataResponse<Any>) -> () = self.processDatapointUploadResponse(completion: completion)
-        
-        request.responseJSON(queue: self.dispatchQueue, completionHandler: reponseProcessor)
-        
-    }
-    
     private func processDatapointUploadResponse(completion: @escaping ((Bool, Error?) -> ())) -> (DataResponse<Any>) -> () {
         
         return { jsonResponse in
             //check for actually success
             
-            debugPrint(jsonResponse)
-            
             switch jsonResponse.result {
             case .success:
-                print("Validation Successful")
                 guard let response = jsonResponse.response else {
                     completion(false, LS2ClientError.unknownError)
                     return
@@ -345,6 +409,4 @@ open class LS2Client: NSObject {
         
     }
     
-    
-
 }

@@ -9,16 +9,16 @@
 import UIKit
 
 class RSTBServiceLoader<Proto> {
-    fileprivate var serviceProviders: [Proto]! = []
+    private var serviceProviders: [Proto]! = []
     
-    open func addService<T>(service: T) {
+    public func addService<T>(service: T) {
         if let protoService = service as? Proto {
             self.serviceProviders = self.serviceProviders + [protoService]
         }
         
     }
     
-    open func iterator() -> IndexingIterator<Array<Proto>> {
+    public func iterator() -> IndexingIterator<Array<Proto>> {
         return self.serviceProviders.makeIterator()
     }
 }

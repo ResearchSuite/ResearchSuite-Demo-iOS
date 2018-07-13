@@ -17,19 +17,65 @@ public extension RSTBBaseStepGenerator {
     public func registerFormatters(template: Template) {
         let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percent
-        
         template.register(percentFormatter,  forKey: "percent")
+        
+        let timeInterval3Decimal = Filter { (timeInterval: TimeInterval?) in
+            guard let timeInterval = timeInterval else {
+                // No value, or not a TimeInterval: return nil.
+                // We could throw an error as well.
+                return nil
+            }
+            
+            let timeIntervalFormatter = NumberFormatter()
+            timeIntervalFormatter.numberStyle = .decimal
+            timeIntervalFormatter.maximumFractionDigits = 3
+            timeIntervalFormatter.minimumFractionDigits = 3
+            
+            guard let timeIntervalString = timeIntervalFormatter.string(for: timeInterval) else {
+                return nil
+            }
+            
+            // Return the result
+            return "\(timeIntervalString) seconds"
+        }
+        
+        template.register(timeInterval3Decimal,  forKey: "timeInterval3Decimal")
+        
+        let timeInterval2Decimal = Filter { (timeInterval: TimeInterval?) in
+            guard let timeInterval = timeInterval else {
+                // No value, or not a TimeInterval: return nil.
+                // We could throw an error as well.
+                return nil
+            }
+            
+            let timeIntervalFormatter = NumberFormatter()
+            timeIntervalFormatter.numberStyle = .decimal
+            timeIntervalFormatter.maximumFractionDigits = 2
+            timeIntervalFormatter.minimumFractionDigits = 2
+            
+            guard let timeIntervalString = timeIntervalFormatter.string(for: timeInterval) else {
+                return nil
+            }
+            
+            // Return the result
+            return "\(timeIntervalString) seconds"
+        }
+        
+        template.register(timeInterval2Decimal,  forKey: "timeInterval2Decimal")
+        
     }
     
     public func generateAttributedString(descriptor: RSTemplatedTextDescriptor, stateHelper: RSTBStateHelper, defaultAttributes: [String : Any]? = nil) -> NSAttributedString? {
-        
-        var arguments: [String: Any] = [:]
-        
-        descriptor.arguments.forEach { argumentKey in
-            if let value: Any = stateHelper.valueInState(forKey: argumentKey) {
-                arguments[argumentKey] = value
+
+        let pairs: [(String, Any)] = descriptor.arguments.compactMap { (pair) -> (String, Any)? in
+            guard let value: Any = stateHelper.valueInState(forKey: pair.value) else {
+                return nil
             }
+            
+            return (pair.key, value)
         }
+        
+        let arguments: [String: Any] = Dictionary.init(uniqueKeysWithValues: pairs)
         
         var renderedString: String?
         //check for mismatch in argument length
@@ -44,7 +90,6 @@ public extension RSTBBaseStepGenerator {
             renderedString = try template.render(arguments)
         }
         catch let error {
-            debugPrint(error)
             return nil
         }
         

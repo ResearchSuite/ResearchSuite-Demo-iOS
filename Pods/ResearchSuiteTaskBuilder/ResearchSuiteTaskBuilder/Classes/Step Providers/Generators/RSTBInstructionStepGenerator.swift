@@ -16,7 +16,7 @@ open class RSTBInstructionStepGenerator: RSTBBaseStepGenerator {
         "instruction"
     ]
     
-    open var supportedTypes: [String]! {
+    public var supportedTypes: [String]! {
         return self._supportedTypes
     }
     
@@ -27,9 +27,11 @@ open class RSTBInstructionStepGenerator: RSTBBaseStepGenerator {
         }
         
         let step = ORKInstructionStep(identifier: element.identifier)
-        step.title = element.title
-        step.text = element.text
-        step.detailText = element.detailText
+        step.title = helper.localizationHelper.localizedString(element.title)
+        step.text =  helper.localizationHelper.localizedString(element.text)
+        step.detailText =  helper.localizationHelper.localizedString(element.detailText)
+        if let imageTitle = element.imageTitle { step.image = UIImage(named: imageTitle) }
+        if let auxImageTitle = element.auxImageTitle { step.auxiliaryImage = UIImage(named: auxImageTitle) }
         return step
     }
     

@@ -8,10 +8,18 @@
 
 import UIKit
 import ResearchSuiteAppFramework
+import ResearchSuiteExtensions
 import ResearchSuiteTaskBuilder
 import LS2SDK
 
-class RSStore: NSObject, LS2CredentialStore, RSTBStateHelper {
+class RSStore: NSObject, RSTBStateHelper {
+    
+    let store = RSKeychainCredentialsStore(namespace: "appStore")
+    
+    func objectInState(forKey: String) -> AnyObject? {
+        return nil
+    }
+    
     
     func valueInState(forKey: String) -> NSSecureCoding? {
         return self.get(key: forKey)
@@ -22,15 +30,15 @@ class RSStore: NSObject, LS2CredentialStore, RSTBStateHelper {
     }
     
     func set(value: NSSecureCoding?, key: String) {
-        RSAFKeychainStateManager.setValueInState(value: value, forKey: key)
+        store.setValueInState(value: value, forKey: key)
     }
     func get(key: String) -> NSSecureCoding? {
-        return RSAFKeychainStateManager.valueInState(forKey: key)
+        return store.valueInState(forKey: key)
     }
 
-    
-    func reset() {
-        RSAFKeychainStateManager.clearKeychain()
-    }
-    
+//
+//    func reset() {
+//        store
+//    }
+//
 }

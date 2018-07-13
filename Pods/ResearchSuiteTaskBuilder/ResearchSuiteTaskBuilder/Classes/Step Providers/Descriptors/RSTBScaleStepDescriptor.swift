@@ -11,13 +11,13 @@ import Gloss
 
 open class RSTBScaleStepDescriptor: RSTBQuestionStepDescriptor {
 
-    open let maximumValue: Int
-    open let minimumValue: Int
-    open let defaultValue: Int
-    open let stepValue: Int
-    open let vertical: Bool
-    open let maximumDescription: String?
-    open let minimumDescription: String?
+    public let maximumValue: Int
+    public let minimumValue: Int
+    public let defaultValue: Int
+    public let stepValue: Int
+    public let vertical: Bool
+    public let maximumDescription: String?
+    public let minimumDescription: String?
     
     required public init?(json: JSON) {
         

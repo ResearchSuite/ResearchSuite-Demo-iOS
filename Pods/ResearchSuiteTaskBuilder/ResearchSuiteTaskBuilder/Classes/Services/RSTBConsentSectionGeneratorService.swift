@@ -24,7 +24,7 @@ open class RSTBConsentSectionGeneratorService: NSObject {
         super.init()
     }
     
-    open func generate(type: String,
+    public func generate(type: String,
                          jsonObject: JSON,
                          helper:RSTBTaskBuilderHelper) -> ORKConsentSection? {
         return self.generators

@@ -11,23 +11,22 @@ import Gloss
 
 open class RSTBStandardConsentDocumentDescriptor: RSTBElementDescriptor {
     
-    open let sections: [JSON]
-    open let signatures: [JSON]
-    open let title: String
+    public let sections: [JSON]
+    public let signatures: [JSON]
+    public let title: String?
     
     // MARK: - Deserialization
     
     required public init?(json: JSON) {
         guard let sections: [JSON] = "sections" <~~ json,
-            let signatures: [JSON] = "signatures" <~~ json,
-            let title: String = "title" <~~ json
+            let signatures: [JSON] = "signatures" <~~ json
             else {
                 return nil
         }
         
         self.sections = sections
         self.signatures = signatures
-        self.title = title
+        self.title = "title" <~~ json
         
         super.init(json: json)
     }

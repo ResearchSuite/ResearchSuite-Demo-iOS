@@ -10,8 +10,8 @@ import Gloss
 
 open class RSTBCustomStepDescriptor: RSTBStepDescriptor {
     
-    open var parameters: JSON?
-    open var parameterFileName: String?
+    public var parameters: JSON?
+    public var parameterFileName: String?
     
     public required init?(json: JSON) {
         

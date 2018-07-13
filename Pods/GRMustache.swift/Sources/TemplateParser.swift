@@ -82,7 +82,7 @@ final class TemplateParser {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
-                            type: .text(text: String(templateString[range])),
+                            type: .text(text: templateString[range]),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -98,7 +98,7 @@ final class TemplateParser {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
-                            type: .text(text: String(templateString[range])),
+                            type: .text(text: templateString[range]),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -114,7 +114,7 @@ final class TemplateParser {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
-                            type: .text(text: String(templateString[range])),
+                            type: .text(text: templateString[range]),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -311,7 +311,7 @@ final class TemplateParser {
         case .text(let startIndex, let startLineNumber):
             let range = startIndex..<end
             let token = TemplateToken(
-                type: .text(text: String(templateString[range])),
+                type: .text(text: templateString[range]),
                 lineNumber: startLineNumber,
                 templateID: templateID,
                 templateString: templateString,

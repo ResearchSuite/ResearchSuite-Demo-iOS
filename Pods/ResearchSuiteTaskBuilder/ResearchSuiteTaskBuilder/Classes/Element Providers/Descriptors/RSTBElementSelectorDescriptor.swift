@@ -9,8 +9,8 @@
 import Gloss
 
 open class RSTBElementSelectorDescriptor: RSTBElementDescriptor {
-    open let elementList: [JSON]!
-    open let selectorType: String!
+    public let elementList: [JSON]!
+    public let selectorType: String!
     
     // MARK: - Deserialization
     

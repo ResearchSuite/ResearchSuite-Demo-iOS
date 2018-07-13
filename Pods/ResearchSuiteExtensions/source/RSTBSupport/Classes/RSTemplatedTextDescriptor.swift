@@ -9,10 +9,10 @@
 import UIKit
 import Gloss
 
-open class RSTemplatedTextDescriptor: Gloss.Decodable {
+open class RSTemplatedTextDescriptor: Gloss.JSONDecodable {
     
     public let template: String
-    public let arguments: [String]
+    public let arguments: [String: String]
     
     required public init?(json: JSON) {
         
@@ -21,7 +21,23 @@ open class RSTemplatedTextDescriptor: Gloss.Decodable {
         }
         
         self.template = template
-        self.arguments = "arguments" <~~ json ?? []
+        if let argumentsArray: [String] = "arguments" <~~ json {
+            
+            let pairs: [(String, String)] = argumentsArray.map { argument in
+                return (argument, argument)
+            }
+            
+            self.arguments = Dictionary.init(uniqueKeysWithValues: pairs)
+        }
+        else if let arguments: [String: String] = "argumentMapping" <~~ json {
+            self.arguments = arguments
+        }
+        else {
+            self.arguments = [:]
+        }
+        
+        
+        
 
     }
 

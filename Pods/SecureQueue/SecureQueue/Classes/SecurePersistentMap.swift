@@ -46,6 +46,7 @@ open class SecurePersistentMap: NSObject {
                 do {
                     try self.removeMapDirectory()
                 } catch let error as NSError {
+                    //TODO: handle this
                     print(error.localizedDescription);
                 }
             }
@@ -57,6 +58,7 @@ open class SecurePersistentMap: NSObject {
 //            let attributes = try FileManager.default.attributesOfItem(atPath: self.mapDirectoryName)
 //            debugPrint(attributes)
         } catch let error as NSError {
+            //TODO: Handle this
             print(error.localizedDescription);
         }
         

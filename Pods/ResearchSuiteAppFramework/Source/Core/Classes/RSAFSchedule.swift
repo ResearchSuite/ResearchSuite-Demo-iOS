@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-open class RSAFSchedule: Gloss.Decodable {
+open class RSAFSchedule: JSONDecodable {
     open let type: String
     open let identifier: String
     open let title: String

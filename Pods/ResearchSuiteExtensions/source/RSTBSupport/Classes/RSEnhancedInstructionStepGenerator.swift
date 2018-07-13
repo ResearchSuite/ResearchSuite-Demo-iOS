@@ -56,6 +56,13 @@ open class RSEnhancedInstructionStepGenerator: RSTBBaseStepGenerator {
             step.gifURL = gifURL
         }
         
+        if let imageTitle = stepDescriptor.imageTitle,
+            let image = UIImage(named: imageTitle) {
+            step.image = image
+        }
+        
+        step.audioTitle = stepDescriptor.audioTitle
+        
         return step
     }
     

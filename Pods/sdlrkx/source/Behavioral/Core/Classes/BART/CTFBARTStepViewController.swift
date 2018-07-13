@@ -9,19 +9,6 @@
 import UIKit
 import ResearchKit
 
-//extension Array where Element: Integer {
-//    /// Returns the sum of all elements in the array
-//    var total: Element {
-//        return reduce(0, +)
-//    }
-//}
-//extension Collection where Iterator.Element == Int, Index == Int {
-//    /// Returns the average of all elements in the array
-//    var average: Float {
-//        return isEmpty ? 0 : Float(reduce(0, +)) / Float(endIndex-startIndex)
-//    }
-//}
-
 open class CTFBARTStepViewController: ORKStepViewController {
 
     let initialScalingFactor: CGFloat = 10.0
@@ -251,7 +238,7 @@ open class CTFBARTStepViewController: ORKStepViewController {
         self.collectButton.isEnabled = false
         self.pumpButton.isEnabled = false
         
-        self.taskProgressLabel.text = "Ballon 1 out of \(self.trialsCount)."
+        self.taskProgressLabel.text = "Balloon 1 out of \(self.trialsCount):"
         self.totalPayoutLabel.text = "$0.00"
     }
     
@@ -291,7 +278,7 @@ open class CTFBARTStepViewController: ORKStepViewController {
         self.pendingResults = results
         
         //set the task progress label and total payout label
-        self.taskProgressLabel.text = "Ballon \(results.count + 1) out of \(self.trialsCount)."
+        self.taskProgressLabel.text = "Balloon \(results.count + 1) out of \(self.trialsCount):"
         
         let totalPayout: Float = results.reduce(0.0) { (acc, trialResult) -> Float in
             return acc + trialResult.payout

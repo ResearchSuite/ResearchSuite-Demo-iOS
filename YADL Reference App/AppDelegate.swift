@@ -9,11 +9,12 @@
 import UIKit
 import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
-import ResearchSuiteAppFramework
 import Gloss
 import sdlrkx
 import UserNotifications
 import LS2SDK
+import ResearchSuiteExtensions
+import ResearchSuiteAppFramework
 
 
 @UIApplicationMain
@@ -27,10 +28,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var ls2Manager: LS2Manager!
     var ls2Backend: LS2BackEnd!
     
+//    var store: RSCredentialsStore!
+    
     
     @available(iOS 10.0, *)
     var center: UNUserNotificationCenter!{
         return UNUserNotificationCenter.current()
+    }
+    
+    func initializeLS2(credentialStore: RSCredentialsStore, config: String, logger: RSLogger?) -> LS2Manager {
+        guard let file = Bundle.main.path(forResource: "LS2Client", ofType: "plist") else {
+            fatalError("Could not initialze LS2Manager")
+        }
+        
+        
+        let clientDetails = NSDictionary(contentsOfFile: file)
+        
+        guard let configDict = clientDetails?[config] as? [String: String],
+            let baseURL = configDict["baseURL"] else {
+                fatalError("Could not initialze LS2Manager")
+        }
+        
+        let manager: LS2Manager? = {
+            return LS2Manager(
+                baseURL: baseURL,
+                queueStorageDirectory: "ls2SDKCache",
+                store: credentialStore,
+                logger: logger
+            )
+        }()
+        
+        if let m = manager {
+            return m
+        }
+        else {
+            fatalError("Could not initialze LS2 Manager")
+        }
     }
     
 
@@ -47,10 +80,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     }
 
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+        if UserDefaults.standard.object(forKey: "FirstRun") == nil {
+            UserDefaults.standard.set("1stRun", forKey: "FirstRun")
+            UserDefaults.standard.synchronize()
+            
+            RSKeychainHelper.clearKeychain()
+        }
+        
+        
+        return true
+    }
     
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
         
         let documentsPath = NSURL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
         let logsPath = documentsPath.appendingPathComponent("data")
@@ -65,17 +110,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.store.setValueInState(value: true as NSSecureCoding, forKey: "shouldDoSpot")
         self.store.set(value: true as NSSecureCoding, key: "shouldDoNotif")
         
-        
         self.taskBuilder = RSTBTaskBuilder(
             stateHelper: self.store,
+            localizationHelper: nil,
             elementGeneratorServices: AppDelegate.elementGeneratorServices,
             stepGeneratorServices: AppDelegate.stepGeneratorServices,
             answerFormatGeneratorServices: AppDelegate.answerFormatGeneratorServices
         )
         
-        self.ls2Manager = LS2Manager(baseURL: "https://development.ls2.curiosityhealth.com/dsu", queueStorageDirectory: "LS2SDK", store: RSStore())
+//        self.ls2Manager = LS2Manager(baseURL: "https://development.ls2.curiosityhealth.com/dsu", queueStorageDirectory: "LS2SDK", store: RSStore())
+        self.ls2Manager = self.initializeLS2(credentialStore: RSKeychainCredentialsStore(namespace: "ls2sdk"), config: "development", logger: nil)
 
-        self.ls2Backend = LS2BackEnd(ls2Mananager: self.ls2Manager, transformers: [OMHTransformer.self])
+        self.ls2Backend = LS2BackEnd(ls2Mananager: self.ls2Manager, transformers: [LS2DefaultTransformer.self])
         self.resultsProcessor = RSRPResultsProcessor(
                 frontEndTransformers: AppDelegate.resultsTransformers,
                 backEnd: self.ls2Backend
@@ -94,7 +140,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 CTFPAMRaw.self,
                 DemographicsSurveyResult.self,
                 CTFBARTSummaryResultsTransformer.self,
-                CTFDelayDiscountingRawResultsTransformer.self
+                CTFDelayDiscountingRawResultsTransformer.self,
+                LS2AutoResult.self
             ]
         }
 
@@ -290,8 +337,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return RSAFSchedule(json: json)
     }
     
+    static func configJSONBaseURL() -> String {
+        return Bundle.main.resourceURL!.appendingPathComponent("config").absoluteString
+    }
+    
     static func loadScheduleItem(filename: String) -> RSAFScheduleItem? {
-        guard let json = AppDelegate.getJson(forFilename: filename) as? JSON else {
+        
+        guard let json = AppDelegate.getJSON(fileName: filename, inDirectory: nil, configJSONBaseURL: self.configJSONBaseURL()) else {
             return nil
         }
         
@@ -299,7 +351,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     static func loadActivity(filename: String) -> JSON? {
-        return AppDelegate.getJson(forFilename: filename) as? JSON
+        return AppDelegate.getJSON(fileName: filename, inDirectory: nil, configJSONBaseURL: self.configJSONBaseURL())
     }
     
     static func getJson(forFilename filename: String, inBundle bundle: Bundle = Bundle.main) -> JsonElement? {
@@ -321,6 +373,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return json as JsonElement?
     }
     
+    open static func getJSON(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> JSON? {
+        
+        let urlPath: String = inDirectory != nil ? inDirectory! + "/" + fileName : fileName
+        guard let urlBase = configJSONBaseURL,
+            let url = URL(string: urlBase + urlPath) else {
+                return nil
+        }
+        
+        return self.getJSON(forURL: url)
+    }
+    
+    open static func getJSON(forURL url: URL) -> JSON? {
+        
+        print(url)
+        guard let fileContent = try? Data(contentsOf: url)
+            else {
+                assertionFailure("Unable to create NSData with content of file \(url)")
+                return nil
+        }
+        
+        guard let json = (try? JSONSerialization.jsonObject(with: fileContent, options: JSONSerialization.ReadingOptions.mutableContainers)) as? JSON else {
+            return nil
+        }
+        
+        return json
+    }
     
     
     
@@ -346,6 +424,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         
+    }
+    
+    
+}
+
+extension RSKeychainCredentialsStore: RSTBStateHelper {
+    public func objectInState(forKey: String) -> AnyObject? {
+        return nil
+    }
+    
+    public func valueInState(forKey: String) -> NSSecureCoding? {
+        return self.get(key: forKey)
+    }
+    
+    public func setValueInState(value: NSSecureCoding?, forKey: String) {
+        self.set(value: value, key: forKey)
     }
     
     

@@ -11,7 +11,8 @@ import UIKit
 import ResearchKit
 import ResearchSuiteResultsProcessor
 import Gloss
-import OMHClient
+//import OMHClient
+import LS2SDK
 
 open class DemographicsSurveyResult: RSRPIntermediateResult, RSRPFrontEndTransformer {
     

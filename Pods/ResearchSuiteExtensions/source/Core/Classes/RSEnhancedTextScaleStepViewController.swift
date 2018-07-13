@@ -32,6 +32,8 @@ open class RSEnhancedTextScaleStepViewController: RSQuestionViewController {
         sliderView.neutralValueDescriptionLabel.text = answerFormat.neutralValueDescription
         sliderView.maxValueDescriptionLabel.text = answerFormat.maximumValueDescription
         
+        sliderView.textLabel.text = nil
+        
         sliderView.onValueChanged = { value in
             self.value = value
             if value >= 0 && value < answerFormat.textChoices.count {
@@ -57,12 +59,15 @@ open class RSEnhancedTextScaleStepViewController: RSQuestionViewController {
         else {
             sliderView.setValue(value: answerFormat.defaultIndex, animated: false)
         }
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.frame = self.contentView.bounds
+        self.contentView.addSubview(stackView)
         
-        sliderView.setNeedsLayout()
+        stackView.addArrangedSubview(sliderView)
+        stackView.addArrangedSubview(UIView())
         
-        
-        self.contentView.addSubview(sliderView)
-        self.contentView.setNeedsLayout()
     }
     
     override open func validate() -> Bool {

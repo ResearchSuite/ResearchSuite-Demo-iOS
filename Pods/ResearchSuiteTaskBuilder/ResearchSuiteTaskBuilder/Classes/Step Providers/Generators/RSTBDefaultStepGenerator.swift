@@ -13,15 +13,15 @@ open class RSTBDefaultStepGenerator: RSTBStepGenerator {
     
     public init(){}
     
-    open func supportsType(type: String) -> Bool {
+    public func supportsType(type: String) -> Bool {
         return true
     }
     
-    open func supportedStepTypes() -> [String] {
+    public func supportedStepTypes() -> [String] {
         return ["*"]
     }
     
-    open func generateStep(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKStep? {
+    public func generateStep(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKStep? {
         
         guard let element = RSTBStepDescriptor(json: jsonObject) else {
             return nil
@@ -33,12 +33,12 @@ open class RSTBDefaultStepGenerator: RSTBStepGenerator {
         return step
     }
     
-    open func generateSteps(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> [ORKStep]? {
+    public func generateSteps(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> [ORKStep]? {
         
         return [generateStep(type: type, jsonObject: jsonObject, helper: helper)].flatMap({$0})
     }
     
-    open func generateSteps(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper, identifierPrefix: String) -> [ORKStep]? {
+    public func generateSteps(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper, identifierPrefix: String) -> [ORKStep]? {
         guard let element = RSTBStepDescriptor(json: jsonObject) else {
             return nil
         }
@@ -49,7 +49,7 @@ open class RSTBDefaultStepGenerator: RSTBStepGenerator {
         return [step]
     }
     
-    open func processStepResult(type: String,
+    public func processStepResult(type: String,
                                   jsonObject: JsonObject,
                                   result: ORKStepResult,
                                   helper: RSTBTaskBuilderHelper) -> JSON? {

@@ -29,7 +29,6 @@ open class RSRedirectStepViewController: RSQuestionViewController {
     override open func continueTapped(_ sender: Any) {
         
         self.redirectDelegate?.beginRedirect(completion: { (error, errorMessage) in
-            debugPrint(error)
             
             if error == nil {
                 self.logInSuccessful = true
@@ -46,7 +45,7 @@ open class RSRedirectStepViewController: RSQuestionViewController {
                     // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
                     let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                         (result : UIAlertAction) -> Void in
-                        print("OK")
+                        
                     }
                     
                     alertController.addAction(okAction)

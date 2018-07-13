@@ -10,9 +10,9 @@ import Gloss
 
 open class RSTBStepDescriptor: RSTBElementDescriptor {
     
-    open let optional: Bool
-    open let title: String?
-    open let text: String?
+    public let optional: Bool
+    public let title: String?
+    public let text: String?
     
     // MARK: - Deserialization
     

@@ -10,10 +10,10 @@ import Gloss
 
 open class RSTBChoiceStepDescriptor<ChoiceItem: RSTBChoiceItemDescriptor>: RSTBQuestionStepDescriptor {
     
-    open let items: [ChoiceItem]
-    open let valueSuffix: String?
-    open let shuffleItems: Bool
-    open let maximumNumberOfItems: Int?
+    public let items: [ChoiceItem]
+    public let valueSuffix: String?
+    public let shuffleItems: Bool
+    public let maximumNumberOfItems: Int?
     
     public required init?(json: JSON) {
         

@@ -98,6 +98,11 @@ open class RSQuestionViewController: ORKStepViewController {
         self._appeared = true
     }
     
+    override open func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.contentView.setNeedsLayout()
+    }
+    
     open func setSkipButtonTitle(title: String) {
         self.skipButton.setTitle(title, for: .normal)
     }

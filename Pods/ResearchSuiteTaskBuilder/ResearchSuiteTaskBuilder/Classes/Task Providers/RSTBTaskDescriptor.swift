@@ -11,7 +11,7 @@ import Gloss
 
 open class RSTBTaskDescriptor: RSTBElementDescriptor {
     
-    open let rootStepElement: JSON
+    public let rootStepElement: JSON
     
     // MARK: - Deserialization
     

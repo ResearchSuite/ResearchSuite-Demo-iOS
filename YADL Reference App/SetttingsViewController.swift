@@ -133,27 +133,27 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func launchFullAssessment() {
-        self.fullAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_full")
+        self.fullAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_full.json")
         self.launchActivity(forItem: fullAssessmentItem)
     }
     
     func launchSpotAssessment() {
-        self.spotAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_spot")
+        self.spotAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_spot.json")
         self.launchActivity(forItem: spotAssessmentItem)
     }
     
     func setNotification() {
-        self.notificationItem = AppDelegate.loadScheduleItem(filename: "notification")
+        self.notificationItem = AppDelegate.loadScheduleItem(filename: "notification.json")
         self.launchActivity(forItem: notificationItem)
     }
 
     func launchPamAssessment() {
-        self.pamAssessmentItem = AppDelegate.loadScheduleItem(filename: "pam")
+        self.pamAssessmentItem = AppDelegate.loadScheduleItem(filename: "pam.json")
         self.launchActivity(forItem: pamAssessmentItem)
     }
     
     func launchDemographicsSurvey() {
-        self.demographicsAssessmentItem = AppDelegate.loadScheduleItem(filename: "demographics")
+        self.demographicsAssessmentItem = AppDelegate.loadScheduleItem(filename: "demographics.json")
         self.launchActivity(forItem: demographicsAssessmentItem)
     }
     

@@ -15,7 +15,7 @@ open class RSTBElementFileGenerator: RSTBBaseElementGenerator {
         "elementFile"
     ]
     
-    open var supportedTypes: [String]! {
+    public var supportedTypes: [String]! {
         return self._supportedTypes
     }
     

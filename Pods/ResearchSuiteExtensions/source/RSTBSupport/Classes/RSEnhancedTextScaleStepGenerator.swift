@@ -11,7 +11,12 @@ import ResearchKit
 import ResearchSuiteTaskBuilder
 import Gloss
 
-open class RSEnhancedTextScaleStepGenerator: RSTBBaseStepGenerator {
+open class RSEnhancedTextScaleStepGenerator: RSTBBaseStepGenerator, RSTBAnswerFormatGenerator {
+    
+    public func processQuestionResult(type: String, result: ORKQuestionResult, helper: RSTBTaskBuilderHelper) -> JSON? {
+        return nil
+    }
+    
     public func processStepResult(type: String, jsonObject: JsonObject, result: ORKStepResult, helper: RSTBTaskBuilderHelper) -> JSON? {
         return nil
     }

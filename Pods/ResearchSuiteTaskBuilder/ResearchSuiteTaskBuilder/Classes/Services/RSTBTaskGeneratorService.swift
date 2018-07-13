@@ -24,7 +24,7 @@ open class RSTBTaskGeneratorService: NSObject {
         super.init()
     }
     
-    open func generateTask(type: String,
+    public func generateTask(type: String,
                               jsonObject: JSON,
                               helper:RSTBTaskBuilderHelper) -> ORKTask? {
         return self.taskGenerators

@@ -69,12 +69,12 @@ class MainViewController: UIViewController{
     }
     
     func launchSpotAssessment() {
-        self.spotAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_spot")
+        self.spotAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_spot.json")
         self.launchActivity(forItem: spotAssessmentItem)
     }
     
     func launchFullAssessment () {
-        self.fullAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_full")
+        self.fullAssessmentItem = AppDelegate.loadScheduleItem(filename: "yadl_full.json")
         self.launchActivity(forItem: fullAssessmentItem)
         
     }
@@ -98,7 +98,7 @@ class MainViewController: UIViewController{
             
             if reason == ORKTaskViewControllerFinishReason.completed {
                 let taskResult = taskViewController.result
-                //appDelegate.resultsProcessor.processResult(taskResult: taskResult, resultTransforms: item.resultTransforms)
+                appDelegate.resultsProcessor.processResult(taskResult: taskResult, resultTransforms: item.resultTransforms)
                 
                 if(item.identifier == "yadl_spot") {
                     self?.store.set(value: false as NSSecureCoding, key: "shouldDoSpot")
@@ -152,7 +152,7 @@ class MainViewController: UIViewController{
             self?.dismiss(animated: true, completion: {
                 
                 if(item.identifier == "yadl_spot"){
-                    self!.pamAssessmentItem = AppDelegate.loadScheduleItem(filename:"pam")
+                    self!.pamAssessmentItem = AppDelegate.loadScheduleItem(filename:"pam.json")
                     self?.launchActivity(forItem: (self?.pamAssessmentItem)!)
                 }
                 

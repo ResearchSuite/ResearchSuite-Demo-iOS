@@ -8,19 +8,39 @@
 
 import UIKit
 import ResearchKit
+import Gloss
 
-public struct RSEnahncedMultipleChoiceSelection {
+public struct RSEnahncedMultipleChoiceSelection: JSONEncodable {
+    
+    
+    public let identifier: String
     public let value: NSCoding & NSCopying & NSObjectProtocol
     public let auxiliaryResult: ORKResult?
     
     public var description: String {
         return "\(value)"
     }
+    
+    public func toJSON() -> JSON? {
+        return jsonify([
+            "identifier" ~~> self.identifier,
+            "value" ~~> self.value,
+            "auxiliaryResult" ~~> self.auxiliaryResult
+            ])
+    }
 }
 
 open class RSEnhancedMultipleChoiceResult: ORKResult {
     
     open var choiceAnswers: [RSEnahncedMultipleChoiceSelection]?
+    
+    open func choiceAnswer(for identifier: String) -> RSEnahncedMultipleChoiceSelection? {
+        guard let choiceAnswers = self.choiceAnswers else {
+            return nil
+        }
+        
+        return choiceAnswers.filter({ $0.identifier == identifier }).first
+    }
     
     override open func copy(with zone: NSZone? = nil) -> Any {
         let obj = super.copy(with: zone)
@@ -37,10 +57,9 @@ open class RSEnhancedMultipleChoiceResult: ORKResult {
         let answers: [String] = choiceAnswers != nil ? choiceAnswers!.map { $0.description } : [String]()
         
         if answers.count > 0 {
-            var temp = super.description + "[" + answers.reduce("\n", { (acc, answer) -> String in
+            return super.description + "[" + answers.reduce("\n", { (acc, answer) -> String in
                 return acc + answer + "\n"
-            })
-            return temp + "]"
+            }) + "]"
         }
         else {
             return super.description + "[]"

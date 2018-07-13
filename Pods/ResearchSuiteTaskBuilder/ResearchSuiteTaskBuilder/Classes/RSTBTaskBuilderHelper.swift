@@ -10,19 +10,22 @@ import Gloss
 
 open class RSTBTaskBuilderHelper: NSObject {
     weak var _stateHelper: RSTBStateHelper?
-    open var stateHelper: RSTBStateHelper? {
+    public var stateHelper: RSTBStateHelper? {
         return _stateHelper
     }
     
     weak var _builder: RSTBTaskBuilder?
-    open var builder: RSTBTaskBuilder? {
+    public var builder: RSTBTaskBuilder? {
         return self._builder
     }
     
-    public init(builder: RSTBTaskBuilder, stateHelper: RSTBStateHelper?) {
+    open let localizationHelper: RSTBLocalizationHelper
+    
+    public init(builder: RSTBTaskBuilder, stateHelper: RSTBStateHelper?, localizationHelper: RSTBLocalizationHelper?) {
         
         self._builder = builder
         self._stateHelper = stateHelper
+        self.localizationHelper = localizationHelper ?? RSTBLocalizationHelper()
         super.init()
         
     }

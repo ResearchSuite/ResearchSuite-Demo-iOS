@@ -12,17 +12,17 @@ import Gloss
 open class RSTBStepGeneratorService: NSObject {
     
     
-    static fileprivate var _service: RSTBStepGeneratorService = RSTBStepGeneratorService()
-    static open var service: RSTBStepGeneratorService {
+    static private var _service: RSTBStepGeneratorService = RSTBStepGeneratorService()
+    static public var service: RSTBStepGeneratorService {
         return _service
     }
     
-    static open func initialize(services: [RSTBStepGenerator]) {
+    static public func initialize(services: [RSTBStepGenerator]) {
         
         self._service = RSTBStepGeneratorService(services: services)
     }
     
-    fileprivate var loader: RSTBServiceLoader<RSTBStepGenerator>!
+    private var loader: RSTBServiceLoader<RSTBStepGenerator>!
     
     public override convenience init() {
         let services:[RSTBStepGenerator] = []
@@ -35,7 +35,7 @@ open class RSTBStepGeneratorService: NSObject {
         self.loader = loader
     }
     
-    open func generateSteps(type: String,
+    public func generateSteps(type: String,
                              jsonObject: JSON,
                              helper:RSTBTaskBuilderHelper,
                              identifierPrefix: String = "") -> [ORKStep]? {
@@ -62,7 +62,7 @@ open class RSTBStepGeneratorService: NSObject {
     }
     
     @available(*, deprecated)
-    open func processStepResult(type: String,
+    public func processStepResult(type: String,
                                   jsonObject: JsonObject,
                                   result: ORKStepResult,
                                   helper: RSTBTaskBuilderHelper) -> JSON? {

@@ -8,10 +8,10 @@
 
 import Gloss
 
-open class RSTBElementDescriptor: Gloss.Decodable {
+open class RSTBElementDescriptor: Gloss.JSONDecodable {
     
-    open let type: String
-    open let identifier: String
+    public let type: String
+    public let identifier: String
     
     // MARK: - Deserialization
     

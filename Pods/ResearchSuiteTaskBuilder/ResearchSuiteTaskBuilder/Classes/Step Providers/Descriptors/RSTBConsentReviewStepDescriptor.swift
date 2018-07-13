@@ -10,8 +10,8 @@ import Gloss
 
 open class RSTBConsentReviewStepDescriptor: RSTBStepDescriptor {
     
-    open let consentDocumentFilename: String
-    open let reasonForConsent: String?
+    public let consentDocumentFilename: String
+    public let reasonForConsent: String?
     
     public required init?(json: JSON) {
         

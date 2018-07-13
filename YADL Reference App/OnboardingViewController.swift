@@ -10,8 +10,8 @@ import UIKit
 import ResearchKit
 import ResearchSuiteTaskBuilder
 import Gloss
-import ResearchSuiteAppFramework
 import UserNotifications
+import ResearchSuiteAppFramework
 
 
 class OnboardingViewController: UIViewController {
@@ -53,7 +53,7 @@ class OnboardingViewController: UIViewController {
         let shouldSetNotif = self.store.valueInState(forKey: "shouldDoNotif") as! Bool
         
         if(shouldSetNotif){
-            self.notifItem = AppDelegate.loadScheduleItem(filename: "notification")
+            self.notifItem = AppDelegate.loadScheduleItem(filename: "notification.json")
             self.launchActivity(forItem: (self.notifItem)!)
         }
         
@@ -178,27 +178,27 @@ class OnboardingViewController: UIViewController {
             self?.dismiss(animated: true, completion: {
                 
                 if(item.identifier == "notification_date"){
-                    self!.fullAssessmentItem = AppDelegate.loadScheduleItem(filename:"yadl_full")
+                    self!.fullAssessmentItem = AppDelegate.loadScheduleItem(filename:"yadl_full.json")
                     self?.launchActivity(forItem: (self?.fullAssessmentItem)!)
                     
                 }
 
                 if(item.identifier == "yadl_full"){
-                    self!.spotAssessmentItem = AppDelegate.loadScheduleItem(filename:"yadl_spot")
+                    self!.spotAssessmentItem = AppDelegate.loadScheduleItem(filename:"yadl_spot.json")
                     self?.launchActivity(forItem: (self?.spotAssessmentItem)!)
                 }
 
                 if(item.identifier == "yadl_spot"){
                     self?.store.setValueInState(value: false as NSSecureCoding, forKey: "shouldDoSpot")
-                    self!.pamAssessmentItem = AppDelegate.loadScheduleItem(filename: "pam")
+                    self!.pamAssessmentItem = AppDelegate.loadScheduleItem(filename: "pam.json")
                     self?.launchActivity(forItem: (self?.pamAssessmentItem)!)
                 }
                 if(item.identifier == "PAM"){
-                    self!.demographicsAssessmentItem = AppDelegate.loadScheduleItem(filename:"demographics")
+                    self!.demographicsAssessmentItem = AppDelegate.loadScheduleItem(filename:"demographics.json")
                     self?.launchActivity(forItem: (self?.demographicsAssessmentItem)!)
                 }
                 if(item.identifier == "demographics"){
-                    self!.locationAssessmentItem = AppDelegate.loadScheduleItem(filename: "LocationSurvey")
+                    self!.locationAssessmentItem = AppDelegate.loadScheduleItem(filename: "LocationSurvey.json")
                     self?.launchActivity(forItem: (self?.locationAssessmentItem)!)
                     
                 }

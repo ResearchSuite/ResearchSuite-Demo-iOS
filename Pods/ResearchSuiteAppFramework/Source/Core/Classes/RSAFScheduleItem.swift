@@ -12,7 +12,7 @@ import ResearchSuiteResultsProcessor
 import ResearchKit
 import ReSwift
 
-open class RSAFScheduleItem: Gloss.Decodable {
+open class RSAFScheduleItem: JSONDecodable {
     open let type: String
     open let identifier: String
     open let title: String
@@ -20,7 +20,7 @@ open class RSAFScheduleItem: Gloss.Decodable {
     
     open let activity: JSON
     open let resultTransforms: [RSRPResultTransform]
-    open var onCompletionActionCreators: [(UUID, RSAFActivityRun, ORKTaskResult?) -> Dispatchable<RSAFCombinedState>?]?
+//    open var onCompletionActionCreators: [(UUID, RSAFActivityRun, ORKTaskResult?) -> Dispatchable<RSAFCombinedState>?]?
     
     // MARK: - Deserialization
     

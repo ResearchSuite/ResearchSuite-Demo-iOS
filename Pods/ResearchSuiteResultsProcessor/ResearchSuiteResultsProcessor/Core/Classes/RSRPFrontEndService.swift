@@ -19,7 +19,7 @@ public class RSRPFrontEndService: NSObject {
     
     public func processResult(taskResult: ORKTaskResult, resultTransforms: [RSRPResultTransform]) -> [RSRPIntermediateResult] {
         
-        let intermediateResults = resultTransforms.flatMap { (resultTransform) -> RSRPIntermediateResult? in
+        let intermediateResults = resultTransforms.compactMap { (resultTransform) -> RSRPIntermediateResult? in
             
             return RSRPFrontEndService.processResult(taskResult: taskResult, resultTransform: resultTransform, frontEndTransformers: self.transformers)
         }

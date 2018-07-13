@@ -16,24 +16,25 @@ open class RSEnhancedScaleStepViewController: RSQuestionViewController {
         super.viewDidLoad()
         
         guard let scaleStep = self.step as? RSEnhancedScaleStep,
-            let answerFormat = scaleStep.answerFormat as? RSEnhancedScaleAnswerFormat else {
+            let answerFormat = scaleStep.answerFormat as? RSEnhancedScaleAnswerFormat,
+            let sliderView = RSSliderView.newView(minimumValue: answerFormat.minimum, maximumValue: answerFormat.maximum) else {
             return
         }
         
-        guard let sliderView = RSSliderView.newView(minimumValue: answerFormat.minimum, maximumValue: answerFormat.maximum) else {
-            return
-        }
         
+
         sliderView.minValueLabel.text = answerFormat.minValueLabel
         sliderView.maxValueLabel.text = answerFormat.maxValueLabel
         sliderView.minValueDescriptionLabel.text = answerFormat.minimumValueDescription
         sliderView.neutralValueDescriptionLabel.text = answerFormat.neutralValueDescription
         sliderView.maxValueDescriptionLabel.text = answerFormat.maximumValueDescription
         
+        sliderView.textLabel.text = nil
+        
         sliderView.onValueChanged = { value in
             
+            self.value = value
             if value >= answerFormat.minimum && value <= answerFormat.maximum {
-                self.value = value
                 self.continueButtonEnabled = true
                 sliderView.currentValueLabel.text = "\(value)"
             }
@@ -55,12 +56,13 @@ open class RSEnhancedScaleStepViewController: RSQuestionViewController {
             sliderView.setValue(value: answerFormat.defaultValue, animated: false)
         }
 
-        sliderView.setNeedsLayout()
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.frame = self.contentView.bounds
+        self.contentView.addSubview(stackView)
         
-        self.contentView.addSubview(sliderView)
-        self.contentView.setNeedsLayout()
-        
-//        self.continueButtonEnabled = false
+        stackView.addArrangedSubview(sliderView)
+        stackView.addArrangedSubview(UIView())
     }
     
     override open func validate() -> Bool {

@@ -18,11 +18,11 @@ open class RSTBTextFieldStepDescriptor: RSTBQuestionStepDescriptor {
         case number = "number"
     }
     
-    open let maximumLength: Int?
-    open let multipleLines: Bool
-    open let validationRegex: String?
-    open let invalidMessage: String?
-    open let textType: TextType
+    public let maximumLength: Int?
+    public let multipleLines: Bool
+    public let validationRegex: String?
+    public let invalidMessage: String?
+    public let textType: TextType
     
     required public init?(json: JSON) {
         

@@ -12,6 +12,9 @@ public protocol RSCredentialsStore {
     func get(key: String) -> NSSecureCoding?
 }
 
+
+//note that ORKKeychainWrapper makes everything available after first unlock
+//consider migrating to https://github.com/kishikawakatsumi/KeychainAccess
 open class RSKeychainCredentialsStore: NSObject, RSCredentialsStore {
     
     let namespace: String

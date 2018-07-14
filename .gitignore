@@ -1,7 +1,7 @@
 UserInterfaceState.xcuserstate
 .DS_Store
 *.pem
-LS2Client.plist
+# LS2Client.plist
 
 sync/configBundles
 sync/node_modules

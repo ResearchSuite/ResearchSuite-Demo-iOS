@@ -118,7 +118,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             answerFormatGeneratorServices: AppDelegate.answerFormatGeneratorServices
         )
         
-//        self.ls2Manager = LS2Manager(baseURL: "https://development.ls2.curiosityhealth.com/dsu", queueStorageDirectory: "LS2SDK", store: RSStore())
         self.ls2Manager = self.initializeLS2(credentialStore: RSKeychainCredentialsStore(namespace: "ls2sdk"), config: "development", logger: nil)
 
         self.ls2Backend = LS2BackEnd(ls2Mananager: self.ls2Manager, transformers: [LS2DefaultTransformer.self])
@@ -126,26 +125,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 frontEndTransformers: AppDelegate.resultsTransformers,
                 backEnd: self.ls2Backend
         )
-        
-//        self.CSVBackend = RSRPCSVBackEnd(outputDirectory: documentsPath as URL)
-//        self.resultsProcessor = RSRPResultsProcessor(
-//            frontEndTransformers: AppDelegate.resultsTransformers,
-//            backEnd: self.CSVBackend
-//        )
-        
-//         var resultsTransformers: [RSRPFrontEndTransformer.Type] {
-//            return [
-//                YADLFullRaw.self,
-//                YADLSpotRaw.self,
-//                CTFPAMRaw.self,
-//                DemographicsSurveyResult.self,
-//                CTFBARTSummaryResultsTransformer.self,
-//                CTFDelayDiscountingRawResultsTransformer.self,
-//                LS2AutoResult.self
-//            ]
-//        }
-
-        
         
         if #available(iOS 10.0, *) {
             // self.center = UNUserNotificationCenter.current()

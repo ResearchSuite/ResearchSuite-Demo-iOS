@@ -133,17 +133,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 //            backEnd: self.CSVBackend
 //        )
         
-         var resultsTransformers: [RSRPFrontEndTransformer.Type] {
-            return [
-                YADLFullRaw.self,
-                YADLSpotRaw.self,
-                CTFPAMRaw.self,
-                DemographicsSurveyResult.self,
-                CTFBARTSummaryResultsTransformer.self,
-                CTFDelayDiscountingRawResultsTransformer.self,
-                LS2AutoResult.self
-            ]
-        }
+//         var resultsTransformers: [RSRPFrontEndTransformer.Type] {
+//            return [
+//                YADLFullRaw.self,
+//                YADLSpotRaw.self,
+//                CTFPAMRaw.self,
+//                DemographicsSurveyResult.self,
+//                CTFBARTSummaryResultsTransformer.self,
+//                CTFDelayDiscountingRawResultsTransformer.self,
+//                LS2AutoResult.self
+//            ]
+//        }
 
         
         
@@ -264,7 +264,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             RSTBBooleanStepGenerator(),
             RSTBPasscodeStepGenerator(),
             RSTBScaleStepGenerator(),
-            LS2LoginStepGenerator()
+            LS2LoginStepGenerator(),
+            CTFGoNoGoStepGenerator()
         ]
     }
     
@@ -296,9 +297,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             YADLFullRaw.self,
             YADLSpotRaw.self,
             CTFPAMRaw.self,
-            DemographicsSurveyResult.self,
+//            DemographicsSurveyResult.self,
             CTFBARTSummaryResultsTransformer.self,
-            CTFDelayDiscountingRawResultsTransformer.self
+            CTFDelayDiscountingRawResultsTransformer.self,
+            LS2AutoResult.self,
+            CTFGoNoGoSummaryResultsTransformer.self
         ]
     }
     

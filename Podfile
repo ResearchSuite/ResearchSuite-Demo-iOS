@@ -2,7 +2,7 @@
 platform :ios, '10.0'
 
 source 'https://github.com/ResearchSuite/Specs.git'
-source 'https://github.com/jdkizer9/Specs.git'
+source 'https://github.com/CuriosityHealth/Specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'YADL Reference App' do
@@ -15,6 +15,7 @@ target 'YADL Reference App' do
   pod 'ResearchSuiteResultsProcessor'
   pod 'LS2SDK', '~> 0.9'
   pod "sdlrkx"
+  # pod "sdlrkx", :path => '~/Developer/ResearchSuite/iOS/sdl-rkx'
   pod "ResearchKit", '~> 1.5'
   pod "ResearchSuiteTaskBuilder", '~> 0.11'
   # pod "ResearchSuiteAppFramework", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteAppFramework-iOS'

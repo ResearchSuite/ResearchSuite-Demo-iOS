@@ -26,7 +26,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     var store: RSStore!
     
-    var items: [String] = ["Take Full Assessment", "Take Spot Assessment","Take PAM Assessment","Take Demographics Survey","Set Notification Time","Sign Out"]
+    var items: [String] = ["Take Full Assessment", "Take Spot Assessment","Take PAM Assessment","Take Demographics Survey","Set Notification Time", "Go No Go", "Sign Out"]
     var fullAssessmentItem: RSAFScheduleItem!
     var spotAssessmentItem: RSAFScheduleItem!
     var notificationItem: RSAFScheduleItem!
@@ -124,8 +124,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.setNotification()
         }
         
-        
         if indexPath.row == 5 {
+            self.launchGoNoGo()
+        }
+        
+        
+        if indexPath.row == 6 {
             self.signOut()
         }
         
@@ -155,6 +159,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func launchDemographicsSurvey() {
         self.demographicsAssessmentItem = AppDelegate.loadScheduleItem(filename: "demographics.json")
         self.launchActivity(forItem: demographicsAssessmentItem)
+    }
+    
+    func launchGoNoGo() {
+        guard let item = AppDelegate.loadScheduleItem(filename: "go_no_go_sample.json") else {
+            return
+        }
+        
+        self.launchActivity(forItem: item)
     }
     
 

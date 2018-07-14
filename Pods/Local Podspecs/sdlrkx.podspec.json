@@ -1,6 +1,6 @@
 {
   "name": "sdlrkx",
-  "version": "0.15.0",
+  "version": "0.17.0",
   "summary": "SDL visual self-report for ResearchKit",
   "description": "The Small Data Lab ResearchKit Extensions package is the easiest way to include SDL visual self-report (YADL, MEDL, PAM) and Behavioral extensions (Go / No Go, Delayed Discounting, BART)into a ResearchKit application.",
   "homepage": "https://github.com/ResearchSuite/sdl-rkx",
@@ -13,10 +13,11 @@
   },
   "source": {
     "git": "https://github.com/ResearchSuite/sdl-rkx.git",
-    "tag": "0.15.0"
+    "tag": "0.17.0"
   },
+  "swift_version": "4.1",
   "platforms": {
-    "ios": "9.0"
+    "ios": "10.0"
   },
   "subspecs": [
     {
@@ -31,13 +32,13 @@
 
         ],
         "ResearchSuiteExtensions/Common": [
-          "~> 0.1"
+          "~> 0.14"
         ],
         "ResearchKit": [
           "~> 1.4"
         ],
         "Gloss": [
-          "~> 1"
+          "~> 2"
         ]
       },
       "resources": [
@@ -53,13 +54,13 @@
 
         ],
         "ResearchSuiteExtensions/Common": [
-          "~> 0.1"
+          "~> 0.14"
         ],
         "ResearchSuiteTaskBuilder": [
           "~> 0.4"
         ],
         "Gloss": [
-          "~> 1"
+          "~> 2"
         ]
       }
     },
@@ -79,13 +80,13 @@
       }
     },
     {
-      "name": "VSR-RSRPOhmageBackend",
-      "source_files": "source/VSR/RSRPOhmageBackendSupport/Classes/**/*",
+      "name": "VSR-LS2Backend",
+      "source_files": "source/VSR/LS2Backend/Classes/**/*",
       "dependencies": {
         "sdlrkx/VSR-RSRPSupport": [
 
         ],
-        "OMHClient": [
+        "LS2SDK": [
 
         ]
       }
@@ -98,7 +99,7 @@
 
         ],
         "ResearchSuiteExtensions/Common": [
-          "~> 0.1"
+          "~> 0.14"
         ],
         "ResearchKit": [
           "~> 1.4"
@@ -117,7 +118,7 @@
           "~> 0.4"
         ],
         "Gloss": [
-          "~> 1"
+          "~> 2"
         ]
       }
     },
@@ -137,13 +138,13 @@
       }
     },
     {
-      "name": "Behavioral-RSRPOhmageBackend",
-      "source_files": "source/Behavioral/RSRPOhmageBackendSupport/Classes/**/*",
+      "name": "Behavioral-LS2Backend",
+      "source_files": "source/Behavioral/LS2Backend/Classes/**/*",
       "dependencies": {
         "sdlrkx/Behavioral-RSRPSupport": [
 
         ],
-        "OMHClient": [
+        "LS2SDK": [
 
         ]
       }

@@ -61,37 +61,45 @@ PODS:
     - Gloss (~> 2.0)
     - ResearchKit (~> 1.3)
   - ReSwift (3.0.0)
-  - sdlrkx (0.16.2):
-    - sdlrkx/Behavioral (= 0.16.2)
-    - sdlrkx/Behavioral-RSRPSupport (= 0.16.2)
-    - sdlrkx/Behavioral-RSTBSupport (= 0.16.2)
-    - sdlrkx/Helpers (= 0.16.2)
-    - sdlrkx/VSR (= 0.16.2)
-    - sdlrkx/VSR-RSRPSupport (= 0.16.2)
-    - sdlrkx/VSR-RSTBSupport (= 0.16.2)
-  - sdlrkx/Behavioral (0.16.2):
+  - sdlrkx (0.17.0):
+    - sdlrkx/Behavioral (= 0.17.0)
+    - sdlrkx/Behavioral-LS2Backend (= 0.17.0)
+    - sdlrkx/Behavioral-RSRPSupport (= 0.17.0)
+    - sdlrkx/Behavioral-RSTBSupport (= 0.17.0)
+    - sdlrkx/Helpers (= 0.17.0)
+    - sdlrkx/VSR (= 0.17.0)
+    - sdlrkx/VSR-LS2Backend (= 0.17.0)
+    - sdlrkx/VSR-RSRPSupport (= 0.17.0)
+    - sdlrkx/VSR-RSTBSupport (= 0.17.0)
+  - sdlrkx/Behavioral (0.17.0):
     - ResearchKit (~> 1.4)
     - ResearchSuiteExtensions/Common (~> 0.14)
     - sdlrkx/Helpers
-  - sdlrkx/Behavioral-RSRPSupport (0.16.2):
+  - sdlrkx/Behavioral-LS2Backend (0.17.0):
+    - LS2SDK
+    - sdlrkx/Behavioral-RSRPSupport
+  - sdlrkx/Behavioral-RSRPSupport (0.17.0):
     - ResearchKit (~> 1.4)
     - ResearchSuiteResultsProcessor (~> 0.2)
     - sdlrkx/Behavioral
-  - sdlrkx/Behavioral-RSTBSupport (0.16.2):
+  - sdlrkx/Behavioral-RSTBSupport (0.17.0):
     - Gloss (~> 2)
     - ResearchSuiteTaskBuilder (~> 0.4)
     - sdlrkx/Behavioral
-  - sdlrkx/Helpers (0.16.2)
-  - sdlrkx/VSR (0.16.2):
+  - sdlrkx/Helpers (0.17.0)
+  - sdlrkx/VSR (0.17.0):
     - Gloss (~> 2)
     - ResearchKit (~> 1.4)
     - ResearchSuiteExtensions/Common (~> 0.14)
     - sdlrkx/Helpers
-  - sdlrkx/VSR-RSRPSupport (0.16.2):
+  - sdlrkx/VSR-LS2Backend (0.17.0):
+    - LS2SDK
+    - sdlrkx/VSR-RSRPSupport
+  - sdlrkx/VSR-RSRPSupport (0.17.0):
     - ResearchKit (~> 1.4)
     - ResearchSuiteResultsProcessor (~> 0.2)
     - sdlrkx/VSR
-  - sdlrkx/VSR-RSTBSupport (0.16.2):
+  - sdlrkx/VSR-RSTBSupport (0.17.0):
     - Gloss (~> 2)
     - ResearchSuiteExtensions/Common (~> 0.14)
     - ResearchSuiteTaskBuilder (~> 0.4)
@@ -118,7 +126,7 @@ SPEC REPOS:
     - ReSwift
     - SwiftyGif
     - SwiftyMarkdown
-  https://github.com/jdkizer9/Specs.git:
+  https://github.com/CuriosityHealth/Specs.git:
     - LS2SDK
   https://github.com/ResearchSuite/Specs.git:
     - GRMustache.swift
@@ -148,11 +156,11 @@ SPEC CHECKSUMS:
   ResearchSuiteResultsProcessor: 11bf2051429bf76bf7dd258053aceb092b4cc55d
   ResearchSuiteTaskBuilder: 67d019523d72e06f7abdf4872e0628a772b8bc3a
   ReSwift: f0255f4b4f2dacd12c5d97d34d13fc5dad6d6371
-  sdlrkx: f6ee9b3180ca40ee41792c69f566d129956a1999
+  sdlrkx: bb605e90d6e74db30c1ea5f3534bf2ac6a9b0809
   SecureQueue: 21d7c63fc9369e6706aaef0290cb6fec5d2e9615
   SwiftyGif: d36c6dfb52e2ca1e48fe349d225f50ec4123ec85
   SwiftyMarkdown: 743af3e87931391bc4836b825fec3d98785b2e3a
 
-PODFILE CHECKSUM: 1ae7156c29cdf610181c7f9f4ca27fe5fd0ddf84
+PODFILE CHECKSUM: 7c2fb3282caeaaaef273c2ec4353b6ae75bd48ec
 
 COCOAPODS: 1.5.0

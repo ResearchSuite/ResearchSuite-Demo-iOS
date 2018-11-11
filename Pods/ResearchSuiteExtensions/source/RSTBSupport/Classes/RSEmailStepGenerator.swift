@@ -23,7 +23,7 @@ open class RSEmailStepGenerator: RSTBBaseStepGenerator {
             return nil
         }
         
-        return stepDescriptor.messageBody
+        return helper.localizationHelper.localizedString(stepDescriptor.messageBody)
     }
     
     open func generateStep(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKStep? {
@@ -38,22 +38,22 @@ open class RSEmailStepGenerator: RSTBBaseStepGenerator {
         let step = RSEmailStep(
             identifier: stepDescriptor.identifier,
             recipientAddreses: stepDescriptor.recipientAddreses,
-            messageSubject: stepDescriptor.messageSubject,
+            messageSubject: helper.localizationHelper.localizedString(stepDescriptor.messageSubject),
             messageBody: messageBody,
             bodyIsHTML: stepDescriptor.bodyIsHTML,
-            errorMessage: stepDescriptor.errorMessage,
-            buttonText: stepDescriptor.buttonText ?? "Next"
+            errorMessage: helper.localizationHelper.localizedString(stepDescriptor.errorMessage),
+            buttonText: helper.localizationHelper.localizedString(stepDescriptor.buttonText ?? "Next")
         )
         
         step.title = stepDescriptor.title
         step.text = stepDescriptor.text
         
         if let formattedTitle = stepDescriptor.formattedTitle {
-            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, stateHelper: stateHelper)
+            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, helper: helper)
         }
         
         if let formattedText = stepDescriptor.formattedText {
-            step.attributedText = self.generateAttributedString(descriptor: formattedText, stateHelper: stateHelper)
+            step.attributedText = self.generateAttributedString(descriptor: formattedText, helper: helper)
         }
         
         return step

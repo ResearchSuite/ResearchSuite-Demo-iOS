@@ -30,11 +30,13 @@ open class RSRedirectStepGenerator: RSTBBaseStepGenerator {
                 return nil
         }
         
+        let buttonText: String = helper.localizationHelper.localizedString(stepDescriptor.buttonText)
+        
         let step = RSRedirectStep(
             identifier: stepDescriptor.identifier,
-            title: stepDescriptor.title,
-            text: stepDescriptor.text,
-            buttonText: stepDescriptor.buttonText,
+            title: helper.localizationHelper.localizedString(stepDescriptor.title),
+            text: helper.localizationHelper.localizedString(stepDescriptor.text),
+            buttonText: buttonText,
             delegate: delegate
         )
         

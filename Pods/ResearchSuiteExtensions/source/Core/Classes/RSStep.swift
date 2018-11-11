@@ -13,5 +13,6 @@ open class RSStep: ORKStep {
     
     open var attributedTitle: NSAttributedString?
     open var attributedText: NSAttributedString?
+    open var buttonText: String?
 
 }

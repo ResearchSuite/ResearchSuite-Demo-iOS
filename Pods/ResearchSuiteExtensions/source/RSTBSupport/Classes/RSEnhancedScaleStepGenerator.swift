@@ -29,17 +29,17 @@ open class RSEnhancedScaleStepGenerator: RSTBBaseStepGenerator, RSTBAnswerFormat
         return self._supportedTypes
     }
     
-    open func generateChoices(items: [RSTBChoiceItemDescriptor]) -> [ORKTextChoice] {
-        
-        return items.map { item in
-            
-            return ORKTextChoice(
-                text: item.text,
-                detailText: item.detailText,
-                value: item.value,
-                exclusive: item.exclusive)
-        }
-    }
+//    open func generateChoices(items: [RSTBChoiceItemDescriptor]) -> [ORKTextChoice] {
+//
+//        return items.map { item in
+//
+//            return ORKTextChoice(
+//                text: helper.localizationHelper.localizedString(item.text),
+//                detailText: helper.localizationHelper.localizedString(item.detailText),
+//                value: item.value,
+//                exclusive: item.exclusive)
+//        }
+//    }
     
     open func generateAnswerFormat(type: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKAnswerFormat? {
         
@@ -53,11 +53,11 @@ open class RSEnhancedScaleStepGenerator: RSTBBaseStepGenerator, RSTBAnswerFormat
             defaultValue: stepDescriptor.defaultValue,
             stepValue: stepDescriptor.stepValue,
             vertical: stepDescriptor.vertical,
-            maxValueLabel: stepDescriptor.maximumValueLabel,
-            minValueLabel: stepDescriptor.minimumValueLabel,
-            maximumValueDescription: stepDescriptor.maximumValueDescription,
-            neutralValueDescription: stepDescriptor.neutralValueDescription,
-            minimumValueDescription: stepDescriptor.minimumValueDescription
+            maxValueLabel: helper.localizationHelper.localizedString(stepDescriptor.maximumValueLabel),
+            minValueLabel: helper.localizationHelper.localizedString(stepDescriptor.minimumValueLabel),
+            maximumValueDescription: helper.localizationHelper.localizedString(stepDescriptor.maximumValueDescription),
+            neutralValueDescription: helper.localizationHelper.localizedString(stepDescriptor.neutralValueDescription),
+            minimumValueDescription: helper.localizationHelper.localizedString(stepDescriptor.minimumValueDescription)
         )
         
     }
@@ -71,17 +71,15 @@ open class RSEnhancedScaleStepGenerator: RSTBBaseStepGenerator, RSTBAnswerFormat
         let identifier = "\(identifierPrefix).\(stepDescriptor.identifier)"
         
         let step = RSEnhancedScaleStep(identifier: identifier, answerFormat: answerFormat)
-        step.title = stepDescriptor.title
-        step.text = stepDescriptor.text
+        step.title = helper.localizationHelper.localizedString(stepDescriptor.title)
+        step.text = helper.localizationHelper.localizedString(stepDescriptor.text)
         
-        if let stateHelper = helper.stateHelper,
-            let formattedTitle = stepDescriptor.formattedTitle {
-            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, stateHelper: stateHelper)
+        if let formattedTitle = stepDescriptor.formattedTitle {
+            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, helper: helper)
         }
         
-        if let stateHelper = helper.stateHelper,
-            let formattedText = stepDescriptor.formattedText {
-            step.attributedText = self.generateAttributedString(descriptor: formattedText, stateHelper: stateHelper)
+        if let formattedText = stepDescriptor.formattedText {
+            step.attributedText = self.generateAttributedString(descriptor: formattedText, helper: helper)
         }
         
         step.isOptional = stepDescriptor.optional

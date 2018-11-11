@@ -81,6 +81,12 @@ public struct LS2Schema: Glossy, CustomStringConvertible {
     public let version: LS2SchemaVersion
     public let namespace: String
     
+    public init(name: String, version: LS2SchemaVersion, namespace: String) {
+        self.name = name
+        self.version = version
+        self.namespace = namespace
+    }
+    
     public init?(name: String, version: LS2SchemaVersion?, namespace: String) {
         
         guard let version = version else {
@@ -260,6 +266,7 @@ public protocol LS2Datapoint: Glossy {
 
 public protocol LS2DatapointBuilder {
     static func createDatapoint(header: LS2DatapointHeader, body: JSON) -> LS2Datapoint?
+    static func copyDatapoint(datapoint: LS2Datapoint) -> LS2Datapoint?
 }
 
 //public protocol LS2DatapointEncodable {
@@ -303,6 +310,15 @@ public struct LS2ConcreteDatapoint: LS2Datapoint, LS2DatapointBuilder, LS2Datapo
     
     public static func createDatapoint(header: LS2DatapointHeader, body: JSON) -> LS2Datapoint? {
         return LS2ConcreteDatapoint(header: header, body: body)
+    }
+    
+    public static func copyDatapoint(datapoint: LS2Datapoint) -> LS2Datapoint? {
+        guard let header = datapoint.header,
+            let body = datapoint.body else {
+                return nil
+        }
+    
+        return createDatapoint(header: header, body: body)
     }
     
     public let header: LS2DatapointHeader?

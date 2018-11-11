@@ -9,10 +9,9 @@
 import UIKit
 import ResearchKit
 
-open class RSRedirectStep: ORKStep {
+open class RSRedirectStep: RSStep {
     
     let delegate: RSRedirectStepDelegate
-    let buttonText: String
     
     public init(identifier: String,
                 title: String? = nil,
@@ -22,13 +21,13 @@ open class RSRedirectStep: ORKStep {
         
         let title = title ?? "Log in"
         let text = text ?? "Please log in"
-        self.buttonText = buttonText ?? "Log In"
         self.delegate = delegate
         
         super.init(identifier: identifier)
         
         self.title = title
         self.text = text
+        self.buttonText = buttonText ?? "Log In"
         
     }
     

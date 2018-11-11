@@ -10,14 +10,13 @@ target 'YADL Reference App' do
   use_frameworks!
 
   # Pods for YADL Reference App
-  # pod 'OMHClient', :git => 'https://github.com/ResearchSuite/OMHClient-ios'
-  pod 'ResearchSuiteExtensions'
-  pod 'ResearchSuiteResultsProcessor'
-  pod 'LS2SDK', '~> 0.9'
+  pod 'ResearchSuiteExtensions', '~> 0.20'
+  pod 'ResearchSuiteResultsProcessor', '~> 0.9'
+  pod 'LS2SDK', '~> 0.11'
   pod "sdlrkx"
   # pod "sdlrkx", :path => '~/Developer/ResearchSuite/iOS/sdl-rkx'
   pod "ResearchKit", '~> 1.5'
-  pod "ResearchSuiteTaskBuilder", '~> 0.11'
+  pod "ResearchSuiteTaskBuilder", '~> 0.13'
   # pod "ResearchSuiteAppFramework", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteAppFramework-iOS'
   pod "ResearchSuiteAppFramework", :git => 'https://github.com/ResearchSuite/ResearchSuiteAppFramework-iOS', :branch => 'reduction'
 

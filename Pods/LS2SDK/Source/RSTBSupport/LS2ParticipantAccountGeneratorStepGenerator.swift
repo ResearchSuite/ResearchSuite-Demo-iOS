@@ -56,11 +56,11 @@ open class LS2ParticipantAccountGeneratorStepGenerator: RSTBBaseStepGenerator {
         )
         
         if let formattedTitle = stepDescriptor.formattedTitle {
-            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, stateHelper: stateHelper)
+            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, helper: helper)
         }
         
         if let formattedText = stepDescriptor.formattedText {
-            step.attributedText = self.generateAttributedString(descriptor: formattedText, stateHelper: stateHelper)
+            step.attributedText = self.generateAttributedString(descriptor: formattedText, helper: helper)
         }
         
         return step

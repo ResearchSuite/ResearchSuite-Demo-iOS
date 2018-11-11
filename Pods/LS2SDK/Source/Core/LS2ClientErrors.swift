@@ -59,6 +59,10 @@ public enum LS2ClientError: Error {
     //If datapoint fails json serialization
     case invalidDatapoint
     
+    case invalidAccountCreationToken
+    
+    case accountCreationThrottled
+    
     case unknownError
 }
 

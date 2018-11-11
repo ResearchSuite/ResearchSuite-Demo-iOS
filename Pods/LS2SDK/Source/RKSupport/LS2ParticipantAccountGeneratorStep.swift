@@ -28,7 +28,6 @@ open class LS2ParticipantAccountGeneratorStep: RSStep {
         return LS2ParticipantAccountGeneratorStepViewController.self
     }
     
-    public var buttonText: String? = nil
     public var viewControllerDidLoad: ((UIViewController) -> ())?
     
     public let manager: LS2Manager

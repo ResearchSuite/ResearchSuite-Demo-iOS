@@ -12,17 +12,6 @@ open class RSEmailStepViewController: RSQuestionViewController, MFMailComposeVie
 
     open var emailSent: Bool = false
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        guard let emailStep = self.step as? RSEmailStep else {
-            return
-        }
-        
-        self.setContinueButtonTitle(title: emailStep.buttonText)
-        self.emailSent = false
-    }
-    
     func showErrorMessage(emailStep: RSEmailStep) {
         DispatchQueue.main.async {
             self.emailSent = true

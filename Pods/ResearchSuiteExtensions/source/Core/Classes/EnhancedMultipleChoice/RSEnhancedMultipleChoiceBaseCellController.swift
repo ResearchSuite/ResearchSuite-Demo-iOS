@@ -155,7 +155,7 @@ open class RSEnhancedMultipleChoiceBaseCellController: NSObject, RSEnhancedMulti
 //    private var currentText: String?
     private var selected: Bool
     
-    public init?(textChoice: RSTextChoiceWithAuxiliaryAnswer, choiceSelection: RSEnahncedMultipleChoiceSelection?, onValidationFailed: ((String) -> ())?, onAuxiliaryItemResultChanged: (() -> ())?) {
+    required public init?(textChoice: RSTextChoiceWithAuxiliaryAnswer, choiceSelection: RSEnahncedMultipleChoiceSelection?, onValidationFailed: ((String) -> ())?, onAuxiliaryItemResultChanged: (() -> ())?) {
         
         self.textChoice = textChoice
         self.selected = choiceSelection != nil

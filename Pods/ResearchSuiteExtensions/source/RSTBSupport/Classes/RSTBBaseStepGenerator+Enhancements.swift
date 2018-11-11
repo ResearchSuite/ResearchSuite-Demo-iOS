@@ -65,14 +65,23 @@ public extension RSTBBaseStepGenerator {
         
     }
     
-    public func generateAttributedString(descriptor: RSTemplatedTextDescriptor, stateHelper: RSTBStateHelper, defaultAttributes: [String : Any]? = nil) -> NSAttributedString? {
+    public func generateAttributedString(descriptor: RSTemplatedTextDescriptor, helper: RSTBTaskBuilderHelper, fontColor: UIColor? = nil) -> NSAttributedString? {
 
         let pairs: [(String, Any)] = descriptor.arguments.compactMap { (pair) -> (String, Any)? in
-            guard let value: Any = stateHelper.valueInState(forKey: pair.value) else {
+            guard let stateHelper = helper.stateHelper,
+                let value: Any = stateHelper.valueInState(forKey: pair.value) else {
                 return nil
             }
             
-            return (pair.key, value)
+            //Do we need to do localization here?
+            if let stringValue = value as? String {
+                return (pair.key, helper.localizationHelper.localizedString(stringValue))
+            }
+            else {
+                return (pair.key, value)
+            }
+            
+            
         }
         
         let arguments: [String: Any] = Dictionary.init(uniqueKeysWithValues: pairs)
@@ -85,7 +94,7 @@ public extension RSTBBaseStepGenerator {
         
         //then pass through handlebars
         do {
-            let template = try Template(string: descriptor.template)
+            let template = try Template(string: helper.localizationHelper.localizedString(descriptor.template))
             self.registerFormatters(template: template)
             renderedString = try template.render(arguments)
         }
@@ -102,6 +111,10 @@ public extension RSTBBaseStepGenerator {
         //let's adjust headers based on other labels too
         let md = SwiftyMarkdown(string: markdownString)
 //        md.h1.fontName = UIFont.preferredFont(forTextStyle: .title1).fontName
+        
+        if let color = fontColor {
+            md.setFontColorForAllStyles(with: color)
+        }
         
         let h1Font = RSFonts.computeFont(startingTextStyle: UIFontTextStyle.headline, defaultSize: 17.0, typeAdjustment: 35.0, weight: UIFont.Weight.light)
         

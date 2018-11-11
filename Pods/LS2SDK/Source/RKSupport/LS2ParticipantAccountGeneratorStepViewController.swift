@@ -40,13 +40,7 @@ open class LS2ParticipantAccountGeneratorStepViewController: RSQuestionViewContr
         super.viewDidLoad()
         
         if let step = self.step as? LS2ParticipantAccountGeneratorStep {
-            
-            if let buttonText = step.buttonText {
-                self.setContinueButtonTitle(title: buttonText)
-            }
-            
             step.viewControllerDidLoad?(self)
-            
         }
         
     }
@@ -103,27 +97,11 @@ open class LS2ParticipantAccountGeneratorStepViewController: RSQuestionViewContr
         self.isLoading = true
         step.manager.generateParticipantAccount(generatorCredentials: step.participantAccountGeneratorCredentials, completion: { (error) in
             
-            //if we got and error and its not already have credentials, throw error
-            if let error = error as? LS2ManagerErrors,
-                error != LS2ManagerErrors.hasCredentials {
+            switch error {
                 
-                self.isLoading = false
-                self.logInSuccessful = false
-                let message: String = "Unable to create log in credentials. Please contact support."
-                DispatchQueue.main.async {
-                    let alertController = UIAlertController(title: "Log in failed", message: message, preferredStyle: UIAlertControllerStyle.alert)
-                    
-                    // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-                    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                        (result : UIAlertAction) -> Void in
-                        
-                    }
-                    
-                    alertController.addAction(okAction)
-                    self.present(alertController, animated: true, completion: nil)
-                }
-            }
-            else {
+            case .none:
+                fallthrough
+            case .some(LS2ManagerErrors.hasCredentials):
                 //if no error OR we alreay have credentials, try to log in with credentials
                 step.manager.signInWithCredentials(forceSignIn: true, completion: { (error) in
                     
@@ -158,7 +136,26 @@ open class LS2ParticipantAccountGeneratorStepViewController: RSQuestionViewContr
                     
                 })
                 
+            default:
+
+                self.isLoading = false
+                self.logInSuccessful = false
+                let message: String = "Unable to create log in credentials. Please contact support."
+                DispatchQueue.main.async {
+                    let alertController = UIAlertController(title: "Log in failed", message: message, preferredStyle: UIAlertControllerStyle.alert)
+                    
+                    // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
+                    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                        (result : UIAlertAction) -> Void in
+                        
+                    }
+                    
+                    alertController.addAction(okAction)
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                
             }
+            
         })
         
     }

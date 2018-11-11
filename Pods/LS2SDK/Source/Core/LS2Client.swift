@@ -44,6 +44,10 @@ open class LS2Client: NSObject {
         public let password: String
     }
     
+    public struct ForbiddenResponse: Decodable {
+        public let detail: String
+    }
+    
     let baseURL: String
     let dispatchQueue: DispatchQueue?
     let sessionManager: SessionManager
@@ -85,7 +89,7 @@ open class LS2Client: NSObject {
                 completion(nil, LS2ClientError.badGatewayError)
                 return
             }
-            
+        
             guard jsonResponse.result.isSuccess,
                 let jsonData = jsonResponse.data,
                 let credentials = try? JSONDecoder().decode(ParticipantAccountGenerationResponse.self, from: jsonData) else {
@@ -112,6 +116,102 @@ open class LS2Client: NSObject {
             encoding: JSONEncoding.default)
         
         request.responseJSON(queue: self.dispatchQueue, completionHandler: self.processParticipantAccountGenerationResponse(completion: completion))
+        
+    }
+    
+    open func processTokenBasedParticipantAccountGenerationResponse(completion: @escaping ((ParticipantAccountGenerationResponse?, Error?) -> ())) -> (DataResponse<Any>) -> () {
+        return { jsonResponse in
+            //check for lower level errors
+            if let error = jsonResponse.result.error as NSError? {
+                if error.code == NSURLErrorNotConnectedToInternet {
+                    completion(nil, LS2ClientError.unreachableError(underlyingError: error))
+                    return
+                }
+                else {
+                    completion(nil, LS2ClientError.otherError(underlyingError: error))
+                    return
+                }
+            }
+            
+            //check for our errors
+            //credentialsFailure
+            guard let response = jsonResponse.response else {
+                completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse))
+                return
+            }
+            
+            if response.statusCode == 502 {
+                completion(nil, LS2ClientError.badGatewayError)
+                return
+            }
+            
+            guard jsonResponse.result.isSuccess,
+                let jsonData = jsonResponse.data else {
+                    completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
+                    return
+            }
+            
+            if response.statusCode == 403 {
+                //decode the jsonData
+                if let decodedResponse: ForbiddenResponse = try? JSONDecoder().decode(ForbiddenResponse.self, from: jsonData),
+                    let regex = try? NSRegularExpression(pattern: "^[0-9]+:", options: .caseInsensitive),
+                    let match = regex.firstMatch(in: decodedResponse.detail, options: [], range: NSRange(location: 0, length: decodedResponse.detail.count)) {
+                    let matchedString = (decodedResponse.detail as NSString).substring(with: NSRange(location: match.range.location, length: match.range.length-1)) as String
+                    if let errorCode = Int(matchedString) {
+                        switch errorCode {
+                        case 1:
+                            completion(nil, LS2ClientError.invalidAccountCreationToken)
+                            return
+                            
+                        case 2:
+                            completion(nil, LS2ClientError.accountCreationThrottled)
+                            return
+                            
+                        default:
+                            completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
+                            return
+                        }
+                    }
+                    else {
+                        completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
+                        return
+                    }
+                }
+                else {
+                    completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
+                    return
+                }
+            }
+            
+            if response.statusCode != 201 {
+                completion(nil, LS2ClientError.unknownError)
+                return
+            }
+            
+            guard let credentials = try? JSONDecoder().decode(ParticipantAccountGenerationResponse.self, from: jsonData) else {
+                    completion(nil, LS2ClientError.malformedResponse(responseBody: jsonResponse.result.value))
+                    return
+            }
+            
+            completion(credentials, nil)
+        }
+    }
+    
+    open func generateParticipantAccountWithToken(generatorId: String, token: String, completion: @escaping ((ParticipantAccountGenerationResponse?, Error?) -> ())) {
+        
+        let urlString = "\(self.baseURL)/account/generate/token"
+        let parameters = [
+            "generator_id": generatorId,
+            "token": token
+        ]
+        
+        let request = self.sessionManager.request(
+            urlString,
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default)
+        
+        request.responseJSON(queue: self.dispatchQueue, completionHandler: self.processTokenBasedParticipantAccountGenerationResponse(completion: completion))
         
     }
     

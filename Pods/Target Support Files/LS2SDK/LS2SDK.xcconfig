@@ -1,7 +1,8 @@
 CONFIGURATION_BUILD_DIR = ${PODS_CONFIGURATION_BUILD_DIR}/LS2SDK
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Alamofire" "${PODS_CONFIGURATION_BUILD_DIR}/GRMustache.swift" "${PODS_CONFIGURATION_BUILD_DIR}/Gloss" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchKit" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchSuiteExtensions" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchSuiteResultsProcessor" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchSuiteTaskBuilder" "${PODS_CONFIGURATION_BUILD_DIR}/SecureQueue" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyMarkdown"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Alamofire" "${PODS_CONFIGURATION_BUILD_DIR}/GRMustache.swift" "${PODS_CONFIGURATION_BUILD_DIR}/Gloss" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchKit" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchSuiteExtensions" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchSuiteResultsProcessor" "${PODS_CONFIGURATION_BUILD_DIR}/ResearchSuiteTaskBuilder" "${PODS_CONFIGURATION_BUILD_DIR}/SecureQueue" "${PODS_CONFIGURATION_BUILD_DIR}/SnapKit" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyGif" "${PODS_CONFIGURATION_BUILD_DIR}/SwiftyMarkdown"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-OTHER_SWIFT_FLAGS = $(inherited) "-D" "COCOAPODS"
+OTHER_LDFLAGS = $(inherited) -framework "Alamofire" -framework "Foundation" -framework "Gloss" -framework "Mustache" -framework "ResearchKit" -framework "ResearchSuiteExtensions" -framework "ResearchSuiteResultsProcessor" -framework "ResearchSuiteTaskBuilder" -framework "SecureQueue" -framework "SnapKit" -framework "SwiftyGif" -framework "SwiftyMarkdown"
+OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_ROOT = ${SRCROOT}

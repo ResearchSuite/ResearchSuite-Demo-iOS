@@ -18,7 +18,6 @@ open class RSRedirectStepViewController: RSQuestionViewController {
         super.viewDidLoad()
         
         if let step = self.step as? RSRedirectStep {
-            self.setContinueButtonTitle(title: step.buttonText)
             self.redirectDelegate = step.delegate
         }
         

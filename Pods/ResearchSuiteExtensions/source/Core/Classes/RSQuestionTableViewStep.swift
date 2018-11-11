@@ -9,10 +9,7 @@
 import UIKit
 import ResearchKit
 
-open class RSQuestionTableViewStep: ORKStep {
-   
-    open var attributedTitle: NSAttributedString?
-    open var attributedText: NSAttributedString?
+open class RSQuestionTableViewStep: RSStep {
     
     override open func stepViewControllerClass() -> AnyClass {
         return RSQuestionTableViewController.self

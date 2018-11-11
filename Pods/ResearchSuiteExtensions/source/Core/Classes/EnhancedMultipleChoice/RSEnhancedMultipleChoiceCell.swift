@@ -99,7 +99,7 @@ open class RSEnhancedMultipleChoiceCell: UITableViewCell {
         self.titleLabel?.text = textChoice.text
         self.selectionStyle = .none
         
-        self.checkImage = UIImage(named: "checkmark", in: Bundle(for: ORKStep.self), compatibleWith: nil)
+        self.checkImage = UIImage(named: "checkmark", in: Bundle(for: ORKStep.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         self.updateCheckImage(show: false)
         
         self.auxFormItem = textChoice.auxiliaryItem
@@ -116,6 +116,7 @@ open class RSEnhancedMultipleChoiceCell: UITableViewCell {
         
         if selected {
             self.titleLabel.textColor = self.tintColor
+            self.checkImageView.tintColor = self.tintColor
             self.updateCheckImage(show: true)
             
             if let auxItem = self.auxFormItem {

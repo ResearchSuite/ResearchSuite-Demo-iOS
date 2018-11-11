@@ -32,7 +32,7 @@ open class LS2LoginStepViewController: RSLoginStepViewController {
             
             self.isLoading = true
             
-            ls2Manager.signIn(username: username, password: password, forceSignIn: true) { (error) in
+            ls2Manager.signIn(username: username, password: password, saveUsernameOnSuccess: false, forceSignIn: true) { (error) in
                 
                 self.isLoading = false
                 

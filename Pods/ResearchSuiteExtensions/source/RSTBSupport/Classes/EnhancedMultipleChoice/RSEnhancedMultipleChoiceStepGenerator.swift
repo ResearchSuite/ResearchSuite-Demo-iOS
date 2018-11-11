@@ -86,12 +86,12 @@ open class RSEnhancedChoiceStepGenerator: RSTBBaseStepGenerator {
 
                 let formItem = ORKFormItem(
                     identifier: stepDescriptor.identifier,
-                    text: stepDescriptor.text,
+                    text: helper.localizationHelper.localizedString(stepDescriptor.text),
                     answerFormat: answerFormat,
                     optional: stepDescriptor.optional
                 )
                 
-                formItem.placeholder = "placeholder" <~~ auxiliaryItem
+                formItem.placeholder = helper.localizationHelper.localizedString("placeholder" <~~ auxiliaryItem)
                 
                 return formItem
                 
@@ -99,8 +99,8 @@ open class RSEnhancedChoiceStepGenerator: RSTBBaseStepGenerator {
             
             return RSTextChoiceWithAuxiliaryAnswer(
                 identifier: item.identifier,
-                text: item.text,
-                detailText: item.detailText,
+                text: helper.localizationHelper.localizedString(item.text),
+                detailText: helper.localizationHelper.localizedString(item.detailText),
                 value: value,
                 exclusive: item.exclusive,
                 auxiliaryItem: auxiliaryItem)
@@ -145,19 +145,17 @@ open class RSEnhancedChoiceStepGenerator: RSTBBaseStepGenerator {
         
         let step = RSEnhancedMultipleChoiceStep(
             identifier: stepDescriptor.identifier,
-            title: stepDescriptor.title,
-            text: stepDescriptor.text,
+            title: helper.localizationHelper.localizedString(stepDescriptor.title),
+            text: helper.localizationHelper.localizedString(stepDescriptor.text),
             answer: answerFormat,
             cellControllerGenerators: self.cellControllerGenerators)
         
-        if let stateHelper = helper.stateHelper,
-            let formattedTitle = stepDescriptor.formattedTitle {
-            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, stateHelper: stateHelper)
+        if let formattedTitle = stepDescriptor.formattedTitle {
+            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, helper: helper)
         }
         
-        if let stateHelper = helper.stateHelper,
-            let formattedText = stepDescriptor.formattedText {
-            step.attributedText = self.generateAttributedString(descriptor: formattedText, stateHelper: stateHelper)
+        if let formattedText = stepDescriptor.formattedText {
+            step.attributedText = self.generateAttributedString(descriptor: formattedText, helper: helper)
         }
         
         step.isOptional = stepDescriptor.optional

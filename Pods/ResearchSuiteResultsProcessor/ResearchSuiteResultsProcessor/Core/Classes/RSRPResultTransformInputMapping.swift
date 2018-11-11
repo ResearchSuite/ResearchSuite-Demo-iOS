@@ -33,7 +33,8 @@ public class RSRPResultTransformInputMapping: Gloss.JSONDecodable {
             self.mappingType = .stepIdentifier
             self.value = stepIdentifier as AnyObject
         }
-        else if let value: AnyObject = "constant" <~~ json {
+        else if let value: AnyObject = "constant" <~~ json,
+            !(value is NSNull) {
             self.mappingType = .constant
             self.value = value
         }

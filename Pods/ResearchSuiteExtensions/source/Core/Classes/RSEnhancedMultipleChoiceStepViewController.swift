@@ -13,7 +13,7 @@ open class RSEnhancedMultipleChoiceStepViewController: RSQuestionTableViewContro
 
     var enhancedMultiChoiceStep: RSEnhancedMultipleChoiceStep!
     
-    var cellControllerMap: [Int: RSEnhancedMultipleChoiceCellController]!
+    public var cellControllerMap: [Int: RSEnhancedMultipleChoiceCellController]!
     
     var selected: Set<Int> {
         
@@ -48,7 +48,7 @@ open class RSEnhancedMultipleChoiceStepViewController: RSQuestionTableViewContro
     
     
     
-    func generateCellController(for textChoice: RSTextChoiceWithAuxiliaryAnswer, choiceSelection: RSEnahncedMultipleChoiceSelection?) -> RSEnhancedMultipleChoiceCellController? {
+    open func generateCellController(for textChoice: RSTextChoiceWithAuxiliaryAnswer, choiceSelection: RSEnahncedMultipleChoiceSelection?) -> RSEnhancedMultipleChoiceCellController? {
         
         let onValidationFailed: (String) -> () = { [weak self] message in
             self?.showValidityAlertMessage(message: message )
@@ -77,6 +77,10 @@ open class RSEnhancedMultipleChoiceStepViewController: RSQuestionTableViewContro
         
         self.enhancedMultiChoiceStep = step as! RSEnhancedMultipleChoiceStep
         
+        self.initializeCellControllerMap(step: step, result: result)
+    }
+    
+    open func initializeCellControllerMap(step: ORKStep?, result: ORKResult?) {
         
         guard let answerFormat = self.enhancedMultiChoiceStep.answerFormat,
             let textChoices = answerFormat.textChoices as? [RSTextChoiceWithAuxiliaryAnswer] else {

@@ -59,34 +59,37 @@ open class RSQuestionViewController: ORKStepViewController {
         
         super.viewDidLoad()
         
-        self.titleLabel.text = self.step?.title
-        self.textLabel.text = self.step?.text
+        assert(self.step is RSStep)
         
-        if let step = self.step as? RSStep {
-            if let attributedTitle = step.attributedTitle {
-                self.titleLabel.attributedText = attributedTitle
-            }
-            
-            if let attributedText = step.attributedText {
-                self.textLabel.attributedText = attributedText
-            }
+        let step = self.step as! RSStep
+        
+        self.titleLabel.text = step.title
+        self.textLabel.text = step.text
+        
+        if let attributedTitle = step.attributedTitle {
+            self.titleLabel.attributedText = attributedTitle
         }
         
+        if let attributedText = step.attributedText {
+            self.textLabel.attributedText = attributedText
+        }
         
-        
-        if self.hasNextStep() {
-            self.setContinueButtonTitle(title: "Next")
+        if let buttonText = step.buttonText {
+            self.setContinueButtonTitle(title: buttonText)
         }
         else {
-            self.setContinueButtonTitle(title: "Done")
+            if self.hasNextStep() {
+                self.continueButton.setTitle("Next", for: .normal)
+            }
+            else {
+                self.continueButton.setTitle("Done", for: .normal)
+            }
         }
+        
+        self.skipButton.isHidden = !step.isOptional
         
         if !type(of: self).showsContinueButton {
             self.footerHeight.constant = RSQuestionViewController.footerHeightWithoutContinueButton
-        }
-        
-        if let step = self.step {
-            self.skipButton.isHidden = !step.isOptional
         }
         
     }

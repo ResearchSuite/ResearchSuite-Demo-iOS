@@ -30,16 +30,19 @@ open class RSEnhancedInstructionStepGenerator: RSTBBaseStepGenerator {
         }
         
         let step = RSEnhancedInstructionStep(identifier: stepDescriptor.identifier)
-        step.title = stepDescriptor.title
-        step.text = stepDescriptor.text
-//        step.detailText = stepDescriptor.detailText
+        step.title = helper.localizationHelper.localizedString(stepDescriptor.title)
+        step.text = helper.localizationHelper.localizedString(stepDescriptor.text)
         
         if let formattedTitle = stepDescriptor.formattedTitle {
-            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, stateHelper: stateHelper)
+            step.attributedTitle = self.generateAttributedString(descriptor: formattedTitle, helper: helper)
         }
         
         if let formattedText = stepDescriptor.formattedText {
-            step.attributedText = self.generateAttributedString(descriptor: formattedText, stateHelper: stateHelper)
+            step.attributedText = self.generateAttributedString(descriptor: formattedText, helper: helper)
+        }
+        
+        if let buttonText = stepDescriptor.buttonText {
+            step.buttonText = helper.localizationHelper.localizedString(buttonText)
         }
         
         if let gifTitle = stepDescriptor.gifTitle,

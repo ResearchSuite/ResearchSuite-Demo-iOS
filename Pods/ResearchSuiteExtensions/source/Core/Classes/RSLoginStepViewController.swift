@@ -79,28 +79,31 @@ open class RSLoginStepViewController: ORKFormStepViewController {
                 return
         }
         
-        let username = (loginStepResult.result(forIdentifier: RSLoginStep.RSLoginStepIdentity) as? ORKTextQuestionResult)?.answer as? String
-        let password = (loginStepResult.result(forIdentifier: RSLoginStep.RSLoginStepPassword) as? ORKTextQuestionResult)?.answer as? String
+        self.handleButtonTap(
+            identityResult: loginStepResult.result(forIdentifier: RSLoginStep.RSLoginStepIdentity),
+            passwordResult: loginStepResult.result(forIdentifier: RSLoginStep.RSLoginStepPassword)
+        ) { moveForward in
+            if moveForward {
+                DispatchQueue.main.async {
+                    super.goForward()
+                }
+            }
+        }
+        
+    }
+    
+    open func handleButtonTap(identityResult: ORKResult?, passwordResult: ORKResult?, completion: @escaping ActionCompletion) {
+        
+        let username = (identityResult as? ORKTextQuestionResult)?.answer as? String
+        let password = (passwordResult as? ORKTextQuestionResult)?.answer as? String
         
         switch (username, password) {
             
         case (.some(let username), .some(let password)):
-            self.loginButtonAction(username: username, password: password) { moveForward in
-                if moveForward {
-                    DispatchQueue.main.async {
-                        super.goForward()
-                    }
-                }
-            }
+            self.loginButtonAction(username: username, password: password, completion: completion)
             
         default:
-            self.forgotPasswordButtonAction() { moveForward in
-                if moveForward {
-                    DispatchQueue.main.async {
-                        super.goForward()
-                    }
-                }
-            }
+            self.forgotPasswordButtonAction(completion: completion)
         }
         
     }

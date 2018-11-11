@@ -9,7 +9,6 @@ import UIKit
 
 open class RSEmailStep: RSStep {
 
-    open let buttonText: String
     open let recipientAddreses: [String]
     open let messageSubject: String?
     open let messageBody: String?
@@ -25,13 +24,15 @@ open class RSEmailStep: RSStep {
         errorMessage: String,
         buttonText: String
     ) {
-        self.buttonText = buttonText
+        
         self.recipientAddreses = recipientAddreses
         self.messageSubject = messageSubject
         self.messageBody = messageBody
         self.bodyIsHTML = bodyIsHTML
         self.errorMessage = errorMessage
         super.init(identifier: identifier)
+        
+        self.buttonText = buttonText
         
     }
     

@@ -54,26 +54,36 @@ open class RSLoginStep: ORKFormStep {
                 text: String?,
                 identityFieldName: String = "Username",
                 identityFieldAnswerFormat: ORKAnswerFormat = RSLoginStep.usernameAnswerFormat(),
+                showIdentityField: Bool = true,
                 passwordFieldName: String = "Password",
                 passwordFieldAnswerFormat: ORKAnswerFormat = RSLoginStep.passwordAnswerFormat(),
+                showPasswordField: Bool = true,
                 loginViewControllerClass: AnyClass = RSLoginStepViewController.self,
                 loginViewControllerDidLoad: ((UIViewController) -> ())? = nil,
                 loginButtonTitle: String = "Login",
-                forgotPasswordButtonTitle: String?) {
+                forgotPasswordButtonTitle: String? = nil) {
         
         super.init(identifier: identifier, title: title, text: text)
+        
+        
         
         let identityItem = ORKFormItem(identifier: RSLoginStep.RSLoginStepIdentity,
                                        text: identityFieldName,
                                        answerFormat: identityFieldAnswerFormat,
                                        optional: false)
         
+        
         let passwordItem = ORKFormItem(identifier: RSLoginStep.RSLoginStepPassword,
                                        text: passwordFieldName,
                                        answerFormat: passwordFieldAnswerFormat,
                                        optional: false)
         
-        self.formItems = [identityItem, passwordItem]
+        let formItems: [ORKFormItem] = [
+            showIdentityField ? identityItem : nil,
+            showPasswordField ? passwordItem : nil
+            ].compactMap { $0 }
+        
+        self.formItems = formItems
         
         
         self.loginButtonTitle = loginButtonTitle

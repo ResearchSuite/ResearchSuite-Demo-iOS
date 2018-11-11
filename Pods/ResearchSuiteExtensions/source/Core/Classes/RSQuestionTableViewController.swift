@@ -19,7 +19,7 @@ open class RSQuestionTableViewController: ORKStepViewController, UITableViewData
     @IBOutlet weak var bottomPaddingView: UIView!
     @IBOutlet public weak var skipButton: RSLabelButton!
     @IBOutlet public weak var continueButton: RSBorderedButton!
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet public weak var tableView: UITableView!
     @IBOutlet weak var headerView: UIStackView!
     @IBOutlet weak var footerContainer: UIView!
     @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint!
@@ -45,37 +45,40 @@ open class RSQuestionTableViewController: ORKStepViewController, UITableViewData
     }
     
     override open func viewDidLoad() {
-
-        self.titleLabel.text = self.step?.title
-        self.textLabel.text = self.step?.text
         
-        if let step = self.step as? RSStep {
-            if let attributedTitle = step.attributedTitle {
-                self.titleLabel.attributedText = attributedTitle
-            }
-            
-            if let attributedText = step.attributedText {
-                self.textLabel.attributedText = attributedText
-            }
+        super.viewDidLoad()
+
+        assert(self.step is RSStep)
+        
+        let step = self.step as! RSStep
+        
+        self.titleLabel.text = step.title
+        self.textLabel.text = step.text
+        
+        if let attributedTitle = step.attributedTitle {
+            self.titleLabel.attributedText = attributedTitle
         }
         
-        if self.hasNextStep() {
-            self.continueButton.setTitle("Next", for: .normal)
+        if let attributedText = step.attributedText {
+            self.textLabel.attributedText = attributedText
+        }
+        
+        if let buttonText = step.buttonText {
+            self.setContinueButtonTitle(title: buttonText)
         }
         else {
-            self.continueButton.setTitle("Done", for: .normal)
+            if self.hasNextStep() {
+                self.continueButton.setTitle("Next", for: .normal)
+            }
+            else {
+                self.continueButton.setTitle("Done", for: .normal)
+            }
         }
-        
-        if let tableViewStep = self.step as? RSQuestionTableViewStep {
-            self.skipButton.isHidden = !tableViewStep.isOptional
-        }
+
+        self.skipButton.isHidden = !step.isOptional
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        
-        if let step = self.step {
-            self.skipButton.isHidden = !step.isOptional
-        }
         
     }
     
@@ -150,6 +153,13 @@ open class RSQuestionTableViewController: ORKStepViewController, UITableViewData
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
     }
     
+    open func setSkipButtonTitle(title: String) {
+        self.skipButton.setTitle(title, for: .normal)
+    }
+    
+    open func setContinueButtonTitle(title: String) {
+        self.continueButton.setTitle(title, for: .normal)
+    }
     
     //Note that we want the table view to be as large as the screen,
     //should return one more than actual data source

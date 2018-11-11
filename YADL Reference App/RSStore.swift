@@ -17,7 +17,12 @@ class RSStore: NSObject, RSTBStateHelper {
     let store = RSKeychainCredentialsStore(namespace: "appStore")
     
     func objectInState(forKey: String) -> AnyObject? {
-        return nil
+        switch forKey {
+        case "ls2Manager":
+            return AppDelegate.appDelegate.ls2Manager
+        default:
+            return nil
+        }
     }
     
     

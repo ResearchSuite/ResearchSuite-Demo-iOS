@@ -31,6 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 //    var store: RSCredentialsStore!
     
     
+    static var appDelegate: AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
+    
     @available(iOS 10.0, *)
     var center: UNUserNotificationCenter!{
         return UNUserNotificationCenter.current()

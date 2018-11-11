@@ -35,13 +35,56 @@ class WelcomeViewController: UIViewController {
     }
     
     @IBAction func startClicked(_ sender: Any) {
-        self.launchSignin()
+        self.launchLogin()
     }
-    func launchSignin() {
-        let storyboard = UIStoryboard(name: "LoginStoryboard", bundle: Bundle.main)
-        let vc = storyboard.instantiateInitialViewController()
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.transition(toRootViewController: vc!, animated: true)
+//    func launchSignin() {
+//
+//
+//        let storyboard = UIStoryboard(name: "LoginStoryboard", bundle: Bundle.main)
+//        let vc = storyboard.instantiateInitialViewController()
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        appDelegate.transition(toRootViewController: vc!, animated: true)
+//    }
+    
+    func launchLogin(){
+
+        guard let signInActivity = AppDelegate.loadScheduleItem(filename: "signin.json"),
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+            let steps = appDelegate.taskBuilder.steps(forElement: signInActivity.activity as JsonElement) else {
+                return
+        }
+
+        let task = ORKOrderedTask(identifier: signInActivity.identifier, steps: steps)
+
+        let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { [weak self] (taskViewController, reason, error) in
+
+            //when done, tell the app delegate to go back to the correct screen
+            self?.dismiss(animated: true, completion: {
+                
+                if error == nil {
+                    DispatchQueue.main.async {
+                        let storyboard = UIStoryboard(name: "Onboarding", bundle: Bundle.main)
+                        let vc = storyboard.instantiateInitialViewController()
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.transition(toRootViewController: vc!, animated: true)
+                    }
+                }
+                else {
+                    NSLog(String(describing:error))
+                }
+                
+            })
+
+        }
+
+        let tvc = RSAFTaskViewController(
+            activityUUID: UUID(),
+            task: task,
+            taskFinishedHandler: taskFinishedHandler
+        )
+
+        self.present(tvc, animated: true, completion: nil)
+
     }
     
  

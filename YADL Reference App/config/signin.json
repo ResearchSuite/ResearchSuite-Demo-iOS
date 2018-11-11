@@ -4,16 +4,38 @@
     "title": "login",
     "guid": "login-1",
     "activity": {
-        "type"      : "elementList",
-        "identifier": "LS2Login",
-        "elements"   : [
-                        {
-                        "identifier": "LS2Login",
-                        "type": "LS2Login",
-                        "title": "Sign In",
-                        "text": ""
-                        }
-                        ]
+      "type": "elementList",
+      "identifier": "LS2Login",
+      "elements": [
+        {
+            "identifier": "welcome_instructions",
+            "type": "instruction",
+            "title": "Hi! 👋👋",
+            "text": "Welcome to YADL."
+          },
+          {
+            "identifier": "getting_started_instructions",
+            "type": "instruction",
+            "title": "Getting Started",
+            "text": "First, you're going to need to sign in.\n\nIn the next step, please provide your study credentials."
+          },
+          {
+            "identifier": "logIn",
+            "type": "LS2Login",
+            "title": "Sign In",
+            "text": "Please enter your study credentials to sign in."
+          },
+          {
+            "identifier": "securing_data_instructions",
+            "type": "instruction",
+            "title": "Secure That Data!",
+            "text": "You'll be prompted to create a 4 digit passcode.\n\nPasscodes help keep participant data secure."
+          },
+          {
+            "identifier": "passcode",
+            "type": "passcode"
+          }
+      ]
     },
     "resultTransforms": []
-}
+  }
